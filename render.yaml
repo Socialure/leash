@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: leash
+    runtime: node
+    region: ohio
+    rootDir: app
+    buildCommand: npm install && npm run build
+    startCommand: cp -r .next/static .next/standalone/app/.next/static && cp -r public .next/standalone/app/public && node .next/standalone/app/server.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
