@@ -49,6 +49,7 @@ export interface AgentProfile {
   txCount: number;
   status: "active" | "paused" | "revoked";
   color: string;
+  mpWallet?: string;
 }
 
 // Policy template presets

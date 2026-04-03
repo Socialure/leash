@@ -15,6 +15,7 @@ interface Agent {
   txCount: number;
   status: "active" | "paused" | "revoked";
   color: string;
+  mpWallet?: string;
 }
 
 interface ActivityLog {
@@ -455,11 +456,27 @@ function AgentRow({
           </div>
 
           {/* Wallet */}
-          <div className="font-mono text-xs text-muted flex items-center gap-3 bg-surface py-2 px-3 border border-card-border">
-            <span className="uppercase tracking-widest text-[10px]">Wallet</span>
-            <span className="text-foreground">{agent.walletName}</span>
-            <span className="text-card-border">|</span>
-            <span className="text-[10px]">{agent.walletId.slice(0, 16)}...</span>
+          <div className="font-mono text-xs text-muted bg-surface py-3 px-3 border border-card-border space-y-1.5">
+            <div className="flex items-center gap-3">
+              <span className="uppercase tracking-widest text-[10px] w-10">OWS</span>
+              <span className="text-foreground">{agent.walletName}</span>
+              <span className="text-card-border">·</span>
+              <span className="text-[10px]">{agent.walletId.slice(0, 16)}...</span>
+            </div>
+            {agent.mpWallet && (
+              <div className="flex items-center gap-3">
+                <span className="uppercase tracking-widest text-[10px] w-10">MP</span>
+                <a
+                  href={`https://sepolia.basescan.org/address/${agent.mpWallet}`}
+                  target="_blank"
+                  rel="noopener"
+                  className="text-accent hover:underline"
+                >
+                  {agent.mpWallet.slice(0, 6)}...{agent.mpWallet.slice(-4)}
+                </a>
+                <span className="text-[10px] text-muted/50">Base Sepolia</span>
+              </div>
+            )}
           </div>
 
           {/* Simulate */}

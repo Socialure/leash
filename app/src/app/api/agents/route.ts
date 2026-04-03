@@ -3,8 +3,8 @@ import { ows } from "@/lib/ows";
 import { getStore, addActivity } from "@/lib/store";
 import type { AgentProfile } from "@/lib/ows";
 
-const AGENT_COLORS = ["#a78bfa", "#34d399", "#fbbf24", "#f87171", "#38bdf8", "#fb923c"];
-const AGENT_AVATARS = ["🤖", "🧠", "⚡", "🔮", "🎯", "🦾"];
+const AGENT_COLORS = ["#c44e2a", "#2d7a4f", "#b8860b", "#1a1a1a", "#5b7fa5", "#8b5e3c"];
+const AGENT_AVATARS = ["R", "D", "N", "B", "T", "S"];
 
 export async function GET() {
   const store = getStore();
@@ -85,10 +85,10 @@ export async function POST(req: Request) {
 
 async function initializeDemoAgents(store: ReturnType<typeof getStore>) {
   const demoAgents = [
-    { name: "Research Bot", role: "Data Collection & Analysis", spendLimit: 50, emoji: "🧠", color: "#a78bfa", preset: "conservative" },
-    { name: "DeFi Trader", role: "Automated Trading & Yield", spendLimit: 500, emoji: "📊", color: "#34d399", preset: "defi-agent" },
-    { name: "NFT Scout", role: "NFT Discovery & Bidding", spendLimit: 200, emoji: "🎯", color: "#fbbf24", preset: "multi-chain" },
-    { name: "Bridge Agent", role: "Cross-chain Transfers", spendLimit: 1000, emoji: "⚡", color: "#38bdf8", preset: "multi-chain" },
+    { name: "Research Bot", role: "Data Collection & Analysis", spendLimit: 50, emoji: "R", color: "#c44e2a", preset: "conservative", mpWallet: "0xCd33C711947e7a2e352798b5299Ce8FDfF4CF347" },
+    { name: "DeFi Trader", role: "Automated Trading & Yield", spendLimit: 500, emoji: "D", color: "#2d7a4f", preset: "defi-agent", mpWallet: "0xE85e55a4414b5AD2e32B7aB09F5AF8b86d2ad8dc" },
+    { name: "NFT Scout", role: "NFT Discovery & Bidding", spendLimit: 200, emoji: "N", color: "#b8860b", preset: "multi-chain", mpWallet: "0x8d0ef8711f9815De3Fe252a4f77C74beF5f839fd" },
+    { name: "Bridge Agent", role: "Cross-chain Transfers", spendLimit: 1000, emoji: "B", color: "#1a1a1a", preset: "multi-chain", mpWallet: "0x867Ff24933cA6b14aDb8421575770F5111843D76" },
   ];
 
   for (const da of demoAgents) {
@@ -139,6 +139,7 @@ async function initializeDemoAgents(store: ReturnType<typeof getStore>) {
         txCount: fakeTx,
         status: "active",
         color: da.color,
+        mpWallet: (da as Record<string, unknown>).mpWallet as string | undefined,
       });
     } catch (e) {
       console.error(`Failed to init demo agent ${da.name}:`, e);
