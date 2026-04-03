@@ -29,27 +29,17 @@ interface ActivityLog {
   timestamp: string;
 }
 
-const CHAIN_DISPLAY: Record<string, { name: string; color: string; icon: string }> = {
-  "eip155:1": { name: "Ethereum", color: "#627eea", icon: "Ξ" },
-  "eip155:8453": { name: "Base", color: "#0052ff", icon: "B" },
-  "eip155:10": { name: "Optimism", color: "#ff0420", icon: "O" },
-  "eip155:42161": { name: "Arbitrum", color: "#28a0f0", icon: "A" },
-  "eip155:137": { name: "Polygon", color: "#8247e5", icon: "P" },
-  "eip155:56": { name: "BSC", color: "#f0b90b", icon: "₿" },
-  "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": { name: "Solana", color: "#14f195", icon: "S" },
-  "cosmos:cosmoshub-4": { name: "Cosmos", color: "#6f7390", icon: "⚛" },
-  system: { name: "System", color: "#63636e", icon: "⚙" },
+const CHAINS: Record<string, { name: string; abbr: string }> = {
+  "eip155:1": { name: "Ethereum", abbr: "ETH" },
+  "eip155:8453": { name: "Base", abbr: "BASE" },
+  "eip155:10": { name: "Optimism", abbr: "OP" },
+  "eip155:42161": { name: "Arbitrum", abbr: "ARB" },
+  "eip155:137": { name: "Polygon", abbr: "POLY" },
+  "eip155:56": { name: "BSC", abbr: "BSC" },
+  "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": { name: "Solana", abbr: "SOL" },
+  "cosmos:cosmoshub-4": { name: "Cosmos", abbr: "ATOM" },
+  system: { name: "System", abbr: "SYS" },
 };
-
-function chainLabel(chain: string) {
-  return CHAIN_DISPLAY[chain]?.name || chain;
-}
-function chainColor(chain: string) {
-  return CHAIN_DISPLAY[chain]?.color || "#63636e";
-}
-function chainIcon(chain: string) {
-  return CHAIN_DISPLAY[chain]?.icon || "•";
-}
 
 export default function Dashboard() {
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -97,12 +87,7 @@ export default function Dashboard() {
     fetchData();
   };
 
-  const simulateTx = async (
-    agentId: string,
-    chain: string,
-    amount: number,
-    action: string,
-  ) => {
+  const simulateTx = async (agentId: string, chain: string, amount: number, action: string) => {
     setSimulating(true);
     setSimResult(null);
     const res = await fetch("/api/simulate", {
@@ -126,44 +111,36 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
-          <span className="text-muted text-sm">Loading dashboard...</span>
-        </div>
+        <p className="font-mono text-sm text-muted">Loading...</p>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-card-border/50 bg-background/80 glass">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20">
-              <span className="text-lg">🐕</span>
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold tracking-tight leading-none">
-                Leash
-              </h1>
-              <p className="text-[11px] text-muted mt-0.5">
-                Agent Spend Governance
-              </p>
-            </div>
+      {/* ─── Header ─── */}
+      <header className="border-b border-card-border">
+        <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight leading-none">
+              Leash
+            </h1>
+            <p className="text-xs text-muted mt-1 font-mono uppercase tracking-widest">
+              Agent Spend Governance
+            </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <a
               href="https://openwallet.sh"
               target="_blank"
               rel="noopener"
-              className="text-[11px] text-muted hover:text-foreground/70 transition-colors hidden sm:block"
+              className="text-xs text-muted hover:text-foreground transition-colors font-mono hidden sm:block"
             >
-              Powered by OWS
+              OWS
             </a>
             <button
               onClick={() => setShowAddAgent(true)}
-              className="px-4 py-2 bg-accent/10 hover:bg-accent/20 text-accent text-xs font-medium rounded-lg transition-all border border-accent/20 hover:border-accent/30"
+              className="px-4 py-2 bg-foreground text-background text-xs font-medium rounded hover:bg-foreground/90 transition-colors"
             >
               + Add Agent
             </button>
@@ -171,239 +148,150 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-6">
-        {/* Stats Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-          <StatCard
-            label="Active Agents"
-            value={activeCount.toString()}
-            sub={`${agents.length} total registered`}
-            icon="◉"
-            iconColor="#a78bfa"
-          />
-          <StatCard
+      <main className="flex-1 max-w-6xl mx-auto w-full px-6 py-8">
+        {/* ─── Stats Grid ─── */}
+        <div className="grid grid-cols-4 gap-px bg-card-border mb-10">
+          <StatCell label="Active" value={activeCount.toString()} detail={`${agents.length} total`} />
+          <StatCell
             label="Spend Today"
             value={`$${totalSpend.toFixed(0)}`}
-            sub={`${spendPct.toFixed(0)}% of $${totalLimit.toFixed(0)} limit`}
-            icon="↗"
-            iconColor="#34d399"
+            detail={`${spendPct.toFixed(0)}% of $${totalLimit.toFixed(0)}`}
             barPct={spendPct}
-            barColor={spendPct > 80 ? "#ef4444" : spendPct > 60 ? "#fbbf24" : "#34d399"}
           />
-          <StatCard
-            label="Transactions"
-            value={totalTx.toString()}
-            sub="across all agents"
-            icon="⟐"
-            iconColor="#38bdf8"
-          />
-          <StatCard
-            label="Blocked"
-            value={deniedCount.toString()}
-            sub="policy violations"
-            icon="⊘"
-            iconColor={deniedCount > 0 ? "#ef4444" : "#63636e"}
-            danger={deniedCount > 0}
-          />
+          <StatCell label="Transactions" value={totalTx.toString()} detail="all agents" />
+          <StatCell label="Blocked" value={deniedCount.toString()} detail="policy violations" danger={deniedCount > 0} />
         </div>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Agents Column */}
-          <div className="lg:col-span-2 space-y-3">
-            <div className="flex items-center justify-between mb-1">
-              <h2 className="text-sm font-medium text-muted uppercase tracking-wider">
+        {/* ─── Main Grid ─── */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-10">
+          {/* Agents */}
+          <div>
+            <div className="flex items-baseline justify-between mb-4">
+              <h2 className="font-mono text-xs uppercase tracking-widest text-muted">
                 Agents
               </h2>
-              <span className="text-xs text-muted/60">
-                {activeCount} active · {agents.length - activeCount} paused
+              <span className="font-mono text-xs text-muted">
+                {activeCount}/{agents.length}
               </span>
             </div>
-            {agents.map((agent) => (
-              <AgentCard
-                key={agent.id}
-                agent={agent}
-                isSelected={selectedAgent === agent.id}
-                onSelect={() =>
-                  setSelectedAgent(
-                    selectedAgent === agent.id ? null : agent.id,
-                  )
-                }
-                onToggle={() => toggleAgent(agent.id, agent.status)}
-                onUpdateLimit={(v) => updateLimit(agent.id, v)}
-                onSimulate={(chain, amount, action) =>
-                  simulateTx(agent.id, chain, amount, action)
-                }
-                simulating={simulating && selectedAgent === agent.id}
-                simResult={selectedAgent === agent.id ? simResult : null}
-              />
-            ))}
+            <div className="space-y-0 border-t border-card-border">
+              {agents.map((agent) => (
+                <AgentRow
+                  key={agent.id}
+                  agent={agent}
+                  isSelected={selectedAgent === agent.id}
+                  onSelect={() => setSelectedAgent(selectedAgent === agent.id ? null : agent.id)}
+                  onToggle={() => toggleAgent(agent.id, agent.status)}
+                  onUpdateLimit={(v) => updateLimit(agent.id, v)}
+                  onSimulate={(chain, amount, action) => simulateTx(agent.id, chain, amount, action)}
+                  simulating={simulating && selectedAgent === agent.id}
+                  simResult={selectedAgent === agent.id ? simResult : null}
+                />
+              ))}
+            </div>
           </div>
 
-          {/* Activity Feed */}
+          {/* Activity Log */}
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <h2 className="text-sm font-medium text-muted uppercase tracking-wider">
-                Activity
+            <div className="flex items-baseline justify-between mb-4">
+              <h2 className="font-mono text-xs uppercase tracking-widest text-muted">
+                Activity Log
               </h2>
-              <span className="text-xs text-muted/60">
-                {activity.length} events
-              </span>
+              <span className="font-mono text-xs text-muted">{activity.length}</span>
             </div>
-            <div className="bg-card/50 border border-card-border rounded-xl overflow-hidden">
-              <div className="max-h-[calc(100vh-300px)] overflow-y-auto divide-y divide-card-border/50">
-                {activity.length === 0 ? (
-                  <p className="text-muted text-sm text-center py-12">
-                    No activity yet
-                  </p>
-                ) : (
-                  activity.map((log) => (
-                    <div
-                      key={log.id}
-                      className="px-4 py-3 hover:bg-card-hover/30 transition-colors animate-fade-in"
-                    >
-                      <div className="flex justify-between items-start gap-2">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-xs font-medium truncate">
-                              {log.agentName}
-                            </span>
-                            <span className="text-muted/40">·</span>
-                            <span className="text-xs text-muted truncate">
-                              {log.action}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2 mt-1">
-                            {log.chain !== "system" && (
-                              <span
-                                className="text-[10px] font-mono px-1.5 py-0.5 rounded"
-                                style={{
-                                  color: chainColor(log.chain),
-                                  backgroundColor:
-                                    chainColor(log.chain) + "10",
-                                }}
-                              >
-                                {chainIcon(log.chain)} {chainLabel(log.chain)}
-                              </span>
-                            )}
-                            {log.amount > 0 && (
-                              <span className="text-[10px] text-muted font-mono">
-                                ${log.amount.toFixed(2)}
-                              </span>
-                            )}
-                            <span className="text-[10px] text-muted/50">
-                              {new Date(log.timestamp).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </span>
-                          </div>
+            <div className="border-t border-card-border">
+              {activity.length === 0 ? (
+                <p className="text-muted text-sm py-12 text-center">No activity yet</p>
+              ) : (
+                activity.map((log) => (
+                  <div
+                    key={log.id}
+                    className="py-3 border-b border-card-border/60 animate-fade-in"
+                  >
+                    <div className="flex justify-between items-start gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">{log.agentName}</span>
+                          <span className="text-muted">·</span>
+                          <span className="text-sm text-muted">{log.action}</span>
                         </div>
-                        <StatusBadge status={log.status} />
+                        <div className="flex items-center gap-3 mt-1">
+                          {log.chain !== "system" && (
+                            <span className="font-mono text-xs text-muted">
+                              {CHAINS[log.chain]?.abbr || log.chain}
+                            </span>
+                          )}
+                          {log.amount > 0 && (
+                            <span className="font-mono text-xs text-muted">
+                              ${log.amount.toFixed(2)}
+                            </span>
+                          )}
+                          <span className="font-mono text-xs text-muted/50">
+                            {new Date(log.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          </span>
+                        </div>
                       </div>
-                      {log.reason && (
-                        <p className="text-[10px] text-danger/70 mt-1.5 pl-0">
-                          ↳ {log.reason}
-                        </p>
-                      )}
+                      <StatusTag status={log.status} />
                     </div>
-                  ))
-                )}
-              </div>
+                    {log.reason && (
+                      <p className="text-xs text-danger mt-1.5 font-mono">
+                        {log.reason}
+                      </p>
+                    )}
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
       </main>
 
-      {/* How It Works */}
-      <section className="max-w-7xl mx-auto w-full px-6 py-12 mt-4">
-        <div className="gradient-line mb-8" />
-        <h2 className="text-sm font-medium text-muted uppercase tracking-wider mb-6 text-center">
-          How It Works
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            {
-              step: "01",
-              title: "Register Agent",
-              desc: "Create an OWS wallet, chain policy, and scoped API key for each AI agent.",
-              icon: "🔐",
-            },
-            {
-              step: "02",
-              title: "Set Policies",
-              desc: "Define chain allowlists and daily spend limits. Agents can only transact within bounds.",
-              icon: "📋",
-            },
-            {
-              step: "03",
-              title: "Agent Transacts",
-              desc: "Agent submits a spend request. Policy engine checks chain + limit before signing.",
-              icon: "⚡",
-            },
-            {
-              step: "04",
-              title: "Audit & Monitor",
-              desc: "Every approve/deny is logged. Real-time activity feed with full audit trail.",
-              icon: "📊",
-            },
-          ].map((s) => (
-            <div
-              key={s.step}
-              className="bg-card/40 border border-card-border/50 rounded-xl p-5 hover:border-card-border/80 transition-colors group"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-lg">{s.icon}</span>
-                <span className="text-[10px] font-mono text-accent/40 group-hover:text-accent/60 transition-colors">
-                  {s.step}
-                </span>
+      {/* ─── Architecture Section ─── */}
+      <section className="border-t border-card-border mt-16">
+        <div className="max-w-6xl mx-auto px-6 py-16">
+          <h2 className="font-mono text-xs uppercase tracking-widest text-muted mb-10 text-center">
+            How It Works
+          </h2>
+          <div className="grid grid-cols-4 gap-px bg-card-border">
+            {[
+              { step: "01", title: "Register", desc: "Create an OWS wallet, assign a chain policy and scoped API key for each AI agent." },
+              { step: "02", title: "Policy", desc: "Define chain allowlists and daily spend limits. Agents can only transact within bounds." },
+              { step: "03", title: "Transact", desc: "Agent submits a spend request. Policy engine validates chain + limit before signing." },
+              { step: "04", title: "Audit", desc: "Every approve/deny is logged. Real-time activity feed with full audit trail." },
+            ].map((s) => (
+              <div key={s.step} className="bg-card p-6">
+                <span className="font-mono text-xs text-muted">{s.step}</span>
+                <h3 className="text-lg font-bold mt-2 mb-2">{s.title}</h3>
+                <p className="text-sm text-muted leading-relaxed">{s.desc}</p>
               </div>
-              <h3 className="text-sm font-semibold mb-1.5">{s.title}</h3>
-              <p className="text-xs text-muted/60 leading-relaxed">{s.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* OWS Integration Badge */}
-        <div className="mt-8 flex flex-col items-center gap-3">
-          <div className="flex items-center gap-3 bg-card/40 border border-card-border/50 rounded-xl px-5 py-3">
-            <span className="text-[11px] text-muted/50">Powered by</span>
-            <span className="text-sm font-semibold text-foreground/80">Open Wallet Standard</span>
-            <span className="text-[10px] text-muted/40 font-mono">@open-wallet-standard/core</span>
+            ))}
           </div>
-          <div className="flex flex-wrap justify-center gap-2 text-[10px] font-mono text-muted/30">
-            <span className="px-2 py-1 bg-card/30 rounded border border-card-border/30">createWallet()</span>
-            <span className="px-2 py-1 bg-card/30 rounded border border-card-border/30">createPolicy()</span>
-            <span className="px-2 py-1 bg-card/30 rounded border border-card-border/30">createApiKey()</span>
-            <span className="px-2 py-1 bg-card/30 rounded border border-card-border/30">signMessage()</span>
-            <span className="px-2 py-1 bg-card/30 rounded border border-card-border/30">listWallets()</span>
+
+          {/* Tech Stack */}
+          <div className="mt-12 text-center">
+            <div className="inline-flex items-center gap-4 font-mono text-xs text-muted">
+              <span>@open-wallet-standard/core</span>
+              <span className="text-card-border">|</span>
+              <span>Zerion API</span>
+              <span className="text-card-border">|</span>
+              <span>Next.js</span>
+              <span className="text-card-border">|</span>
+              <span>Base Sepolia</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-card-border/30 mt-auto">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between text-[11px] text-muted/50">
-          <span>
-            Built with{" "}
-            <a
-              href="https://openwallet.sh"
-              target="_blank"
-              rel="noopener"
-              className="text-accent/50 hover:text-accent transition-colors"
-            >
-              Open Wallet Standard
-            </a>
-          </span>
+      {/* ─── Footer ─── */}
+      <footer className="border-t border-card-border">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between font-mono text-xs text-muted">
+          <span>Leash — Built with Open Wallet Standard</span>
           <span>OWS Hackathon 2026</span>
         </div>
       </footer>
 
       {showAddAgent && (
-        <AddAgentModal
-          onClose={() => setShowAddAgent(false)}
-          onCreated={fetchData}
-        />
+        <AddAgentModal onClose={() => setShowAddAgent(false)} onCreated={fetchData} />
       )}
     </div>
   );
@@ -411,70 +299,53 @@ export default function Dashboard() {
 
 /* ──────────── Components ──────────── */
 
-function StatusBadge({ status }: { status: string }) {
-  const config = {
-    approved: { bg: "bg-success/8", text: "text-success", dot: "bg-success" },
-    denied: { bg: "bg-danger/8", text: "text-danger", dot: "bg-danger" },
-    pending: { bg: "bg-warning/8", text: "text-warning", dot: "bg-warning" },
-  }[status] || { bg: "bg-muted/8", text: "text-muted", dot: "bg-muted" };
+function StatusTag({ status }: { status: string }) {
+  const styles = {
+    approved: "text-success",
+    denied: "text-danger",
+    pending: "text-warning",
+  }[status] || "text-muted";
 
   return (
-    <span
-      className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-medium ${config.bg} ${config.text}`}
-    >
-      <span
-        className={`w-1 h-1 rounded-full ${config.dot} ${status === "denied" ? "" : "animate-pulse-dot"}`}
-      />
+    <span className={`font-mono text-xs uppercase tracking-wider ${styles}`}>
+      {status === "approved" && (
+        <span className="inline-block w-1.5 h-1.5 rounded-full bg-success mr-1.5 animate-pulse-dot" />
+      )}
+      {status === "denied" && (
+        <span className="inline-block w-1.5 h-1.5 rounded-full bg-danger mr-1.5" />
+      )}
       {status}
     </span>
   );
 }
 
-function StatCard({
+function StatCell({
   label,
   value,
-  sub,
-  icon,
-  iconColor,
+  detail,
   danger,
   barPct,
-  barColor,
 }: {
   label: string;
   value: string;
-  sub: string;
-  icon: string;
-  iconColor: string;
+  detail: string;
   danger?: boolean;
   barPct?: number;
-  barColor?: string;
 }) {
   return (
-    <div className="bg-card/60 border border-card-border rounded-xl p-4 relative overflow-hidden group hover:border-card-border/80 transition-colors">
-      <div className="flex items-start justify-between">
-        <p className="text-[11px] text-muted uppercase tracking-wider font-medium">
-          {label}
-        </p>
-        <span
-          className="text-sm opacity-40 group-hover:opacity-60 transition-opacity"
-          style={{ color: iconColor }}
-        >
-          {icon}
-        </span>
-      </div>
-      <p
-        className={`text-2xl font-bold mt-2 tracking-tight ${danger ? "text-danger" : "text-foreground"}`}
-      >
+    <div className="bg-card p-5">
+      <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-3">{label}</p>
+      <p className={`text-3xl font-bold tracking-tight tabular-nums ${danger ? "text-danger" : ""}`}>
         {value}
       </p>
-      <p className="text-[11px] text-muted/70 mt-1">{sub}</p>
+      <p className="font-mono text-xs text-muted mt-1">{detail}</p>
       {barPct !== undefined && (
-        <div className="mt-3 h-1 bg-card-border/50 rounded-full overflow-hidden">
+        <div className="mt-3 h-0.5 bg-card-border rounded-full overflow-hidden">
           <div
-            className="h-full rounded-full transition-all duration-700 ease-out"
+            className="h-full rounded-full transition-all duration-700"
             style={{
               width: `${Math.min(barPct, 100)}%`,
-              backgroundColor: barColor,
+              backgroundColor: barPct > 80 ? "var(--danger)" : barPct > 60 ? "var(--warning)" : "var(--success)",
             }}
           />
         </div>
@@ -483,7 +354,7 @@ function StatCard({
   );
 }
 
-function AgentCard({
+function AgentRow({
   agent,
   isSelected,
   onSelect,
@@ -500,122 +371,82 @@ function AgentCard({
   onUpdateLimit: (v: number) => void;
   onSimulate: (chain: string, amount: number, action: string) => void;
   simulating: boolean;
-  simResult: {
-    approved: boolean;
-    reason?: string;
-    signature?: string;
-  } | null;
+  simResult: { approved: boolean; reason?: string; signature?: string } | null;
 }) {
-  const pct =
-    agent.spendLimit > 0 ? (agent.spendToday / agent.spendLimit) * 100 : 0;
-  const barColor =
-    pct > 90 ? "#ef4444" : pct > 70 ? "#fbbf24" : agent.color;
+  const pct = agent.spendLimit > 0 ? (agent.spendToday / agent.spendLimit) * 100 : 0;
 
   return (
-    <div
-      className={`bg-card/60 border rounded-xl transition-all ${
-        isSelected
-          ? "border-accent/30 glow-accent"
-          : "border-card-border hover:border-card-border/80"
-      }`}
-    >
+    <div className={`border-b border-card-border ${isSelected ? "bg-surface" : ""}`}>
       {/* Main Row */}
-      <div
-        className="p-4 flex items-center gap-4 cursor-pointer"
-        onClick={onSelect}
-      >
-        <div
-          className="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0 border"
-          style={{
-            backgroundColor: agent.color + "08",
-            borderColor: agent.color + "20",
-          }}
-        >
-          {agent.avatar}
-        </div>
+      <div className="py-4 flex items-center gap-5 cursor-pointer group" onClick={onSelect}>
+        {/* Name Column */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-sm truncate">{agent.name}</h3>
-            <span
-              className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1 ${
-                agent.status === "active"
-                  ? "bg-success/8 text-success"
-                  : agent.status === "paused"
-                    ? "bg-warning/8 text-warning"
-                    : "bg-danger/8 text-danger"
-              }`}
-            >
-              <span
-                className={`w-1 h-1 rounded-full ${
-                  agent.status === "active"
-                    ? "bg-success animate-pulse-dot"
-                    : agent.status === "paused"
-                      ? "bg-warning"
-                      : "bg-danger"
-                }`}
-              />
+          <div className="flex items-center gap-3">
+            <h3 className="text-sm font-semibold">{agent.name}</h3>
+            <span className={`font-mono text-[10px] uppercase tracking-wider ${
+              agent.status === "active" ? "text-success" : agent.status === "paused" ? "text-warning" : "text-danger"
+            }`}>
+              {agent.status === "active" && <span className="inline-block w-1 h-1 rounded-full bg-success mr-1 animate-pulse-dot" />}
               {agent.status}
             </span>
           </div>
-          <p className="text-xs text-muted/70 mt-0.5">{agent.role}</p>
+          <p className="text-xs text-muted mt-0.5">{agent.role}</p>
         </div>
-        <div className="text-right shrink-0">
-          <p className="text-sm font-mono tabular-nums">
-            <span style={{ color: barColor }}>
-              ${agent.spendToday.toFixed(0)}
-            </span>
-            <span className="text-muted/40"> / </span>
-            <span className="text-muted/60">${agent.spendLimit}</span>
-          </p>
-          <p className="text-[11px] text-muted/50 mt-0.5">
-            {agent.txCount} txns
-          </p>
-        </div>
-      </div>
 
-      {/* Spend Bar */}
-      <div className="px-4 pb-3">
-        <div className="h-1 bg-card-border/30 rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-700 ease-out"
-            style={{
-              width: `${Math.min(pct, 100)}%`,
-              backgroundColor: barColor,
-            }}
-          />
+        {/* Spend Column */}
+        <div className="text-right w-40">
+          <p className="font-mono text-sm tabular-nums">
+            <span className={pct > 80 ? "text-danger" : ""}>${agent.spendToday.toFixed(0)}</span>
+            <span className="text-muted/40"> / </span>
+            <span className="text-muted">${agent.spendLimit}</span>
+          </p>
+          <div className="mt-1.5 h-0.5 bg-card-border rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-700"
+              style={{
+                width: `${Math.min(pct, 100)}%`,
+                backgroundColor: pct > 80 ? "var(--danger)" : pct > 60 ? "var(--warning)" : "var(--foreground)",
+              }}
+            />
+          </div>
         </div>
+
+        {/* Tx Count */}
+        <div className="w-16 text-right">
+          <span className="font-mono text-xs text-muted">{agent.txCount} tx</span>
+        </div>
+
+        {/* Arrow */}
+        <span className="text-muted/40 group-hover:text-muted transition-colors text-xs">
+          {isSelected ? "−" : "+"}
+        </span>
       </div>
 
       {/* Expanded Panel */}
       {isSelected && (
-        <div className="border-t border-card-border/50 p-4 space-y-4 animate-fade-in">
-          {/* Controls Row */}
-          <div className="flex flex-wrap gap-2">
+        <div className="pb-5 px-0 space-y-5 animate-fade-in">
+          {/* Controls */}
+          <div className="flex items-center gap-3 flex-wrap">
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggle();
-              }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+              onClick={(e) => { e.stopPropagation(); onToggle(); }}
+              className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider border transition-colors ${
                 agent.status === "active"
-                  ? "bg-warning/5 text-warning border-warning/20 hover:bg-warning/10"
-                  : "bg-success/5 text-success border-success/20 hover:bg-success/10"
+                  ? "border-warning text-warning hover:bg-warning/5"
+                  : "border-success text-success hover:bg-success/5"
               }`}
             >
-              {agent.status === "active" ? "⏸ Pause" : "▶ Resume"}
+              {agent.status === "active" ? "Pause" : "Resume"}
             </button>
-            <div className="h-7 w-px bg-card-border/50" />
+            <span className="text-card-border">|</span>
+            <span className="font-mono text-[10px] text-muted uppercase tracking-widest">Limit:</span>
             {[25, 50, 100, 250, 500, 1000].map((limit) => (
               <button
                 key={limit}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onUpdateLimit(limit);
-                }}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all ${
+                onClick={(e) => { e.stopPropagation(); onUpdateLimit(limit); }}
+                className={`px-2 py-1 font-mono text-xs transition-colors ${
                   agent.spendLimit === limit
-                    ? "bg-accent/10 text-accent border border-accent/25"
-                    : "text-muted/60 hover:text-muted border border-transparent hover:border-card-border"
+                    ? "bg-foreground text-background"
+                    : "text-muted hover:text-foreground"
                 }`}
               >
                 ${limit}
@@ -623,85 +454,40 @@ function AgentCard({
             ))}
           </div>
 
-          {/* Wallet Info */}
-          <div className="flex items-center gap-2 text-[11px] font-mono text-muted/50 bg-surface/50 rounded-lg px-3 py-2 border border-card-border/30">
-            <span className="text-muted/30">wallet</span>
-            <span className="text-foreground/40">{agent.walletName}</span>
-            <span className="text-muted/20">|</span>
-            <span className="text-muted/30">id</span>
-            <span className="text-foreground/40">
-              {agent.walletId.slice(0, 12)}...
-            </span>
+          {/* Wallet */}
+          <div className="font-mono text-xs text-muted flex items-center gap-3 bg-surface py-2 px-3 border border-card-border">
+            <span className="uppercase tracking-widest text-[10px]">Wallet</span>
+            <span className="text-foreground">{agent.walletName}</span>
+            <span className="text-card-border">|</span>
+            <span className="text-[10px]">{agent.walletId.slice(0, 16)}...</span>
           </div>
 
-          {/* Simulate Transaction */}
+          {/* Simulate */}
           <div>
-            <p className="text-[11px] text-muted/60 mb-2 font-medium uppercase tracking-wider">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted mb-3">
               Simulate Transaction
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <SimButton
-                label="Swap on Base"
-                chain="eip155:8453"
-                amount={15}
-                action="Token swap"
-                onSim={onSimulate}
-                loading={simulating}
-              />
-              <SimButton
-                label="Bridge to ETH"
-                chain="eip155:1"
-                amount={50}
-                action="Bridge transfer"
-                onSim={onSimulate}
-                loading={simulating}
-              />
-              <SimButton
-                label="BSC (blocked)"
-                chain="eip155:56"
-                amount={30}
-                action="Swap attempt"
-                onSim={onSimulate}
-                loading={simulating}
-                danger
-              />
-              <SimButton
-                label="Over limit"
-                chain="eip155:8453"
-                amount={9999}
-                action="Large transfer"
-                onSim={onSimulate}
-                loading={simulating}
-                danger
-              />
+              <SimBtn label="Swap on Base" chain="eip155:8453" amount={15} action="Token swap" onSim={onSimulate} loading={simulating} />
+              <SimBtn label="Bridge to ETH" chain="eip155:1" amount={50} action="Bridge transfer" onSim={onSimulate} loading={simulating} />
+              <SimBtn label="BSC (blocked)" chain="eip155:56" amount={30} action="Swap attempt" onSim={onSimulate} loading={simulating} danger />
+              <SimBtn label="Over limit" chain="eip155:8453" amount={9999} action="Large transfer" onSim={onSimulate} loading={simulating} danger />
             </div>
           </div>
 
-          {/* Sim Result */}
+          {/* Result */}
           {simResult && (
-            <div
-              className={`p-3 rounded-lg text-sm animate-fade-in border ${
-                simResult.approved
-                  ? "bg-success/5 border-success/15"
-                  : "bg-danger/5 border-danger/15"
-              }`}
-            >
+            <div className={`p-3 border text-sm animate-fade-in ${
+              simResult.approved ? "border-success bg-success/5" : "border-danger bg-danger/5"
+            }`}>
               <div className="flex items-center gap-2">
-                <span
-                  className={`text-xs font-medium ${simResult.approved ? "text-success" : "text-danger"}`}
-                >
-                  {simResult.approved ? "✓ Approved" : "✗ Denied"}
+                <span className={`font-mono text-xs uppercase tracking-wider ${simResult.approved ? "text-success" : "text-danger"}`}>
+                  {simResult.approved ? "Approved" : "Denied"}
                 </span>
-                {simResult.reason && (
-                  <span className="text-xs text-muted/60">
-                    — {simResult.reason}
-                  </span>
-                )}
+                {simResult.reason && <span className="text-xs text-muted">— {simResult.reason}</span>}
               </div>
               {simResult.signature && (
-                <p className="text-[10px] text-muted/40 font-mono mt-1.5">
-                  sig: {simResult.signature}
-                </p>
+                <p className="font-mono text-[10px] text-muted mt-1">sig: {simResult.signature}</p>
               )}
             </div>
           )}
@@ -711,51 +497,30 @@ function AgentCard({
   );
 }
 
-function SimButton({
-  label,
-  chain,
-  amount,
-  action,
-  onSim,
-  loading,
-  danger,
+function SimBtn({
+  label, chain, amount, action, onSim, loading, danger,
 }: {
-  label: string;
-  chain: string;
-  amount: number;
-  action: string;
+  label: string; chain: string; amount: number; action: string;
   onSim: (chain: string, amount: number, action: string) => void;
-  loading: boolean;
-  danger?: boolean;
+  loading: boolean; danger?: boolean;
 }) {
   return (
     <button
-      onClick={(e) => {
-        e.stopPropagation();
-        onSim(chain, amount, action);
-      }}
+      onClick={(e) => { e.stopPropagation(); onSim(chain, amount, action); }}
       disabled={loading}
-      className={`px-3 py-2.5 rounded-lg text-xs font-medium transition-all disabled:opacity-40 border ${
+      className={`px-3 py-2.5 text-xs font-mono border transition-colors disabled:opacity-30 text-left ${
         danger
-          ? "bg-danger/3 text-danger/80 hover:bg-danger/8 border-danger/15 hover:border-danger/25"
-          : "bg-card-border/20 text-foreground/60 hover:text-foreground/80 hover:bg-card-border/40 border-card-border/30"
+          ? "border-danger/30 text-danger hover:bg-danger/5"
+          : "border-card-border text-foreground hover:bg-surface"
       }`}
     >
       <span className="block">{label}</span>
-      <span className="block text-[10px] text-muted/50 mt-0.5 font-mono">
-        ${amount}
-      </span>
+      <span className="block text-[10px] text-muted mt-0.5">${amount}</span>
     </button>
   );
 }
 
-function AddAgentModal({
-  onClose,
-  onCreated,
-}: {
-  onClose: () => void;
-  onCreated: () => void;
-}) {
+function AddAgentModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
   const [limit, setLimit] = useState(100);
@@ -768,12 +533,7 @@ function AddAgentModal({
     await fetch("/api/agents", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        role,
-        spendLimit: limit,
-        policyPreset: preset,
-      }),
+      body: JSON.stringify({ name, role, spendLimit: limit, policyPreset: preset }),
     });
     setCreating(false);
     onCreated();
@@ -781,60 +541,44 @@ function AddAgentModal({
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black/70 glass flex items-center justify-center z-50 p-4"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div
-        className="bg-card border border-card-border rounded-2xl p-6 w-full max-w-md animate-fade-in-scale"
+        className="bg-card border border-card-border p-8 w-full max-w-lg animate-fade-in-scale"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-5">
-          <h3 className="text-base font-semibold">Register Agent</h3>
-          <button
-            onClick={onClose}
-            className="text-muted/40 hover:text-muted text-lg transition-colors"
-          >
-            ×
-          </button>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-bold">Register Agent</h3>
+          <button onClick={onClose} className="text-muted hover:text-foreground text-lg transition-colors">×</button>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div>
-            <label className="text-[11px] text-muted uppercase tracking-wider font-medium">
-              Agent Name
-            </label>
+            <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-2">Agent Name</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Treasury Bot"
-              className="w-full mt-1.5 px-3 py-2.5 bg-surface border border-card-border rounded-lg text-sm focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/10 transition-all placeholder:text-muted/30"
+              className="w-full px-3 py-2.5 bg-background border border-card-border text-sm focus:outline-none focus:border-foreground transition-colors placeholder:text-muted/40"
             />
           </div>
           <div>
-            <label className="text-[11px] text-muted uppercase tracking-wider font-medium">
-              Role / Description
-            </label>
+            <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-2">Role</label>
             <input
               value={role}
               onChange={(e) => setRole(e.target.value)}
               placeholder="e.g. Automated yield farming"
-              className="w-full mt-1.5 px-3 py-2.5 bg-surface border border-card-border rounded-lg text-sm focus:outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/10 transition-all placeholder:text-muted/30"
+              className="w-full px-3 py-2.5 bg-background border border-card-border text-sm focus:outline-none focus:border-foreground transition-colors placeholder:text-muted/40"
             />
           </div>
           <div>
-            <label className="text-[11px] text-muted uppercase tracking-wider font-medium">
-              Daily Spend Limit
-            </label>
-            <div className="flex flex-wrap gap-2 mt-1.5">
+            <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-2">Daily Spend Limit</label>
+            <div className="flex gap-2">
               {[25, 50, 100, 250, 500, 1000].map((v) => (
                 <button
                   key={v}
                   onClick={() => setLimit(v)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
-                    limit === v
-                      ? "bg-accent/10 text-accent border border-accent/25"
-                      : "text-muted/50 border border-card-border/50 hover:border-card-border"
+                  className={`px-3 py-1.5 font-mono text-xs transition-colors ${
+                    limit === v ? "bg-foreground text-background" : "text-muted border border-card-border hover:text-foreground"
                   }`}
                 >
                   ${v}
@@ -843,81 +587,49 @@ function AddAgentModal({
             </div>
           </div>
           <div>
-            <label className="text-[11px] text-muted uppercase tracking-wider font-medium">
-              Chain Policy
-            </label>
-            <div className="grid grid-cols-2 gap-2 mt-1.5">
+            <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-2">Chain Policy</label>
+            <div className="grid grid-cols-2 gap-2">
               {[
-                {
-                  id: "conservative",
-                  label: "Conservative",
-                  sub: "ETH + Base only",
-                  icon: "🛡️",
-                },
-                {
-                  id: "defi-agent",
-                  label: "DeFi",
-                  sub: "ETH + all L2s",
-                  icon: "📊",
-                },
-                {
-                  id: "multi-chain",
-                  label: "Multi-Chain",
-                  sub: "EVM + Solana",
-                  icon: "🌐",
-                },
-                {
-                  id: "solana-only",
-                  label: "Solana Only",
-                  sub: "Solana ecosystem",
-                  icon: "☀️",
-                },
+                { id: "conservative", label: "Conservative", sub: "ETH + Base only" },
+                { id: "defi-agent", label: "DeFi", sub: "ETH + all L2s" },
+                { id: "multi-chain", label: "Multi-Chain", sub: "EVM + Solana" },
+                { id: "solana-only", label: "Solana Only", sub: "Solana ecosystem" },
               ].map((p) => (
                 <button
                   key={p.id}
                   onClick={() => setPreset(p.id)}
-                  className={`p-3 rounded-lg text-left transition-all border ${
+                  className={`p-3 text-left border transition-colors ${
                     preset === p.id
-                      ? "bg-accent/5 border-accent/25 text-accent"
-                      : "bg-surface/30 border-card-border/50 text-muted/70 hover:text-foreground/70 hover:border-card-border"
+                      ? "border-foreground bg-surface"
+                      : "border-card-border text-muted hover:text-foreground hover:border-foreground/30"
                   }`}
                 >
-                  <div className="text-xs font-medium flex items-center gap-1.5">
-                    <span>{p.icon}</span>
-                    <span>{p.label}</span>
-                  </div>
-                  <div className="text-[10px] opacity-50 mt-0.5">{p.sub}</div>
+                  <div className="text-xs font-medium">{p.label}</div>
+                  <div className="font-mono text-[10px] text-muted mt-0.5">{p.sub}</div>
                 </button>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="flex gap-2 mt-6">
+        <div className="flex gap-3 mt-8">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 text-muted/60 hover:text-muted rounded-lg text-xs font-medium transition-colors border border-card-border/30 hover:border-card-border"
+            className="flex-1 px-4 py-2.5 text-muted border border-card-border text-xs font-mono uppercase tracking-wider hover:text-foreground transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={submit}
             disabled={!name || creating}
-            className="flex-1 px-4 py-2.5 bg-accent/10 hover:bg-accent/20 text-accent rounded-lg text-xs font-medium transition-all disabled:opacity-30 border border-accent/20 hover:border-accent/30"
+            className="flex-1 px-4 py-2.5 bg-foreground text-background text-xs font-mono uppercase tracking-wider hover:bg-foreground/90 transition-colors disabled:opacity-30"
           >
-            {creating ? (
-              <span className="flex items-center justify-center gap-2">
-                <span className="w-3 h-3 border border-accent/30 border-t-accent rounded-full animate-spin" />
-                Creating...
-              </span>
-            ) : (
-              "Create Agent"
-            )}
+            {creating ? "Creating..." : "Create Agent"}
           </button>
         </div>
 
-        <p className="text-[10px] text-muted/30 text-center mt-3">
-          Creates an OWS wallet + spend policy + API key
+        <p className="font-mono text-[10px] text-muted text-center mt-4">
+          Creates OWS wallet + chain policy + scoped API key
         </p>
       </div>
     </div>
