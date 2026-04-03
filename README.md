@@ -15,7 +15,9 @@ Each agent gets:
 - 🔑 **API keys** — scoped access tokens tied to specific wallets + policies
 - 📊 **Real-time monitoring** — live activity feed with approve/deny audit trail
 
-## Demo
+## Live Demo
+
+**[→ leash-zi0u.onrender.com](https://leash-zi0u.onrender.com)**
 
 The dashboard comes pre-loaded with 4 demo agents:
 - **Research Bot** — $50/day limit, conservative (ETH + Base only)
