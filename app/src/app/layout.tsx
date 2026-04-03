@@ -15,6 +15,19 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Leash — AI Agent Spend Governance",
   description: "Put your AI agents on a leash. Policy-gated wallets powered by Open Wallet Standard.",
+  keywords: ["AI agents", "spend governance", "OWS", "Open Wallet Standard", "policy engine", "multi-chain"],
+  authors: [{ name: "Socialure" }],
+  openGraph: {
+    title: "Leash — AI Agent Spend Governance",
+    description: "Policy-gated wallet management for autonomous AI agents. Set spend limits, chain allowlists, and monitor activity in real-time.",
+    type: "website",
+    url: "https://leash-zi0u.onrender.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Leash — AI Agent Spend Governance",
+    description: "Put your AI agents on a leash. Policy-gated wallets powered by Open Wallet Standard.",
+  },
 };
 
 export default function RootLayout({

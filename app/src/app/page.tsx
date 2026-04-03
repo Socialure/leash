@@ -315,6 +315,72 @@ export default function Dashboard() {
         </div>
       </main>
 
+      {/* How It Works */}
+      <section className="max-w-7xl mx-auto w-full px-6 py-12 mt-4">
+        <div className="gradient-line mb-8" />
+        <h2 className="text-sm font-medium text-muted uppercase tracking-wider mb-6 text-center">
+          How It Works
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            {
+              step: "01",
+              title: "Register Agent",
+              desc: "Create an OWS wallet, chain policy, and scoped API key for each AI agent.",
+              icon: "🔐",
+            },
+            {
+              step: "02",
+              title: "Set Policies",
+              desc: "Define chain allowlists and daily spend limits. Agents can only transact within bounds.",
+              icon: "📋",
+            },
+            {
+              step: "03",
+              title: "Agent Transacts",
+              desc: "Agent submits a spend request. Policy engine checks chain + limit before signing.",
+              icon: "⚡",
+            },
+            {
+              step: "04",
+              title: "Audit & Monitor",
+              desc: "Every approve/deny is logged. Real-time activity feed with full audit trail.",
+              icon: "📊",
+            },
+          ].map((s) => (
+            <div
+              key={s.step}
+              className="bg-card/40 border border-card-border/50 rounded-xl p-5 hover:border-card-border/80 transition-colors group"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-lg">{s.icon}</span>
+                <span className="text-[10px] font-mono text-accent/40 group-hover:text-accent/60 transition-colors">
+                  {s.step}
+                </span>
+              </div>
+              <h3 className="text-sm font-semibold mb-1.5">{s.title}</h3>
+              <p className="text-xs text-muted/60 leading-relaxed">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* OWS Integration Badge */}
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <div className="flex items-center gap-3 bg-card/40 border border-card-border/50 rounded-xl px-5 py-3">
+            <span className="text-[11px] text-muted/50">Powered by</span>
+            <span className="text-sm font-semibold text-foreground/80">Open Wallet Standard</span>
+            <span className="text-[10px] text-muted/40 font-mono">@open-wallet-standard/core</span>
+          </div>
+          <div className="flex flex-wrap justify-center gap-2 text-[10px] font-mono text-muted/30">
+            <span className="px-2 py-1 bg-card/30 rounded border border-card-border/30">createWallet()</span>
+            <span className="px-2 py-1 bg-card/30 rounded border border-card-border/30">createPolicy()</span>
+            <span className="px-2 py-1 bg-card/30 rounded border border-card-border/30">createApiKey()</span>
+            <span className="px-2 py-1 bg-card/30 rounded border border-card-border/30">signMessage()</span>
+            <span className="px-2 py-1 bg-card/30 rounded border border-card-border/30">listWallets()</span>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-card-border/30 mt-auto">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between text-[11px] text-muted/50">
