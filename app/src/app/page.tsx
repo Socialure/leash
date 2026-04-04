@@ -130,10 +130,13 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
+      {/* ─── Ambient background glow ─── */}
+      <div className="page-ambient" aria-hidden="true" />
 
       {/* ─── Header ─── */}
-      <header className="border-b border-card-border steel-bg">
+      <header className="border-b border-card-border steel-bg sticky top-0 z-50">
         <div className="swirl-layer" />
+        <div className="swirl-layer-2" />
         {/* Animated top border line */}
         <div className="header-line" />
         <div className="max-w-[1200px] mx-auto px-8 flex items-stretch justify-between relative z-10">
@@ -186,7 +189,7 @@ export default function Dashboard() {
         <div className="header-line opacity-30" />
       </header>
 
-      <main className="flex-1 max-w-[1200px] mx-auto w-full px-8">
+      <main className="flex-1 max-w-[1200px] mx-auto w-full px-8 relative z-10">
 
         {/* ─── Stats Grid ─── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 border-b border-card-border">
@@ -380,7 +383,7 @@ export default function Dashboard() {
       </main>
 
       {/* ─── How It Works ─── */}
-      <section className="border-t border-card-border">
+      <section className="border-t border-card-border relative z-10">
         <div className="max-w-[1200px] mx-auto">
           <div className="flex items-center justify-between px-8 py-4 border-b border-card-border">
             <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted">Architecture</span>
@@ -436,7 +439,7 @@ export default function Dashboard() {
 
       {/* ─── On-Chain ─── */}
       {agents.filter((a) => a.mpWallet).length > 0 && (
-        <section className="border-t border-card-border">
+        <section className="border-t border-card-border relative z-10">
           <div className="max-w-[1200px] mx-auto">
             <div className="flex items-center justify-between px-8 py-4 border-b border-card-border">
               <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted">On-Chain</span>
@@ -493,7 +496,7 @@ export default function Dashboard() {
       )}
 
       {/* ─── Footer ─── */}
-      <footer className="border-t border-card-border mt-auto">
+      <footer className="border-t border-card-border mt-auto relative z-10">
         <div className="max-w-[1200px] mx-auto px-8 py-4 flex items-center justify-between font-mono text-[10px] text-muted">
           <span className="tracking-[0.1em] uppercase">Leash — Open Wallet Standard</span>
           <div className="flex items-center gap-4">

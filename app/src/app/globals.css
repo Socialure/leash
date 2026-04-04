@@ -2,54 +2,58 @@
 
 /* ── Dark Mode (default) ── */
 :root {
-  --background: #0d0d11;
-  --foreground: #e8e6f0;
-  --card: #13131c;
-  --card-border: #22223a;
-  --card-hover: #18182a;
-  --muted: #5c5c80;
-  --accent: #ff4a1c;
-  --accent-dim: #cc3b16;
-  --accent-glow: rgba(255, 74, 28, 0.10);
-  --accent2: #6366f1;
-  --accent2-glow: rgba(99, 102, 241, 0.12);
-  --steel: #8b9dc3;
-  --steel-dim: #5a6fa8;
-  --shimmer-a: rgba(139, 157, 195, 0.06);
-  --shimmer-b: rgba(99, 102, 241, 0.04);
-  --success: #3dd68c;
-  --warning: #f0a500;
-  --danger: #ff4a1c;
-  --surface: #10101a;
-  --border-light: #2a2a44;
-  --rule: #1c1c2e;
-  --grain-opacity: 0.035;
+  --background: #111118;
+  --foreground: #ede9ff;
+  --card: #17172a;
+  --card-border: #2a2a4a;
+  --card-hover: #1e1e38;
+  --muted: #7070a0;
+  --accent: #ff5533;
+  --accent-dim: #cc4428;
+  --accent-glow: rgba(255, 85, 51, 0.18);
+  --accent2: #7c7fff;
+  --accent2-glow: rgba(124, 127, 255, 0.18);
+  --steel: #a0b4d8;
+  --steel-dim: #6a82b8;
+  --shimmer-a: rgba(124, 127, 255, 0.08);
+  --shimmer-b: rgba(160, 180, 216, 0.06);
+  --success: #4de8a0;
+  --warning: #ffb730;
+  --danger: #ff5533;
+  --surface: #13131f;
+  --border-light: #32325a;
+  --rule: #1e1e38;
+  --grain-opacity: 0.04;
+  --glow-indigo: rgba(124, 127, 255, 0.08);
+  --glow-orange: rgba(255, 85, 51, 0.08);
 }
 
 /* ── Light Mode ── */
 :root.light {
-  --background: #f4f3f0;
-  --foreground: #18181f;
-  --card: #eeece8;
-  --card-border: #d4d2cc;
-  --card-hover: #e6e4de;
-  --muted: #8a8878;
-  --accent: #e03d12;
-  --accent-dim: #b83210;
-  --accent-glow: rgba(224, 61, 18, 0.08);
-  --accent2: #4f52d4;
-  --accent2-glow: rgba(79, 82, 212, 0.10);
-  --steel: #5a6fa8;
-  --steel-dim: #3d4f80;
-  --shimmer-a: rgba(90, 111, 168, 0.06);
-  --shimmer-b: rgba(79, 82, 212, 0.04);
-  --success: #2aab6e;
-  --warning: #d4900a;
-  --danger: #e03d12;
-  --surface: #ebebde;
-  --border-light: #cccac4;
-  --rule: #dedad4;
-  --grain-opacity: 0.02;
+  --background: #f8f7ff;
+  --foreground: #16162a;
+  --card: #eeedf8;
+  --card-border: #d0ceee;
+  --card-hover: #e4e3f5;
+  --muted: #8080b0;
+  --accent: #e04020;
+  --accent-dim: #b43318;
+  --accent-glow: rgba(224, 64, 32, 0.12);
+  --accent2: #5558e8;
+  --accent2-glow: rgba(85, 88, 232, 0.14);
+  --steel: #4f6aa0;
+  --steel-dim: #354e80;
+  --shimmer-a: rgba(85, 88, 232, 0.07);
+  --shimmer-b: rgba(79, 106, 160, 0.05);
+  --success: #1aaa64;
+  --warning: #c8860a;
+  --danger: #e04020;
+  --surface: #efeefc;
+  --border-light: #c4c2e4;
+  --rule: #dddcf0;
+  --grain-opacity: 0.025;
+  --glow-indigo: rgba(85, 88, 232, 0.06);
+  --glow-orange: rgba(224, 64, 32, 0.06);
 }
 
 @theme inline {
@@ -85,6 +89,25 @@ body {
   transition: background 0.35s ease, color 0.35s ease;
 }
 
+/* ── Mesh gradient ambient on body ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%, var(--glow-indigo) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 100%, var(--glow-orange) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 50% 50%, var(--shimmer-a) 0%, transparent 70%);
+  animation: meshShift 20s ease-in-out infinite;
+}
+
+@keyframes meshShift {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+
 /* ── Film Grain Overlay ── */
 body::after {
   content: '';
@@ -105,12 +128,12 @@ body::after {
 
 /* ── Steel / Swirl background canvas ── */
 @keyframes swirlRotate {
-  from { transform: rotate(0deg) scale(1.6); }
-  to   { transform: rotate(360deg) scale(1.6); }
+  from { transform: rotate(0deg) scale(1.8); }
+  to   { transform: rotate(360deg) scale(1.8); }
 }
-@keyframes steelPulse {
-  0%, 100% { opacity: 0.5; }
-  50%       { opacity: 0.9; }
+@keyframes swirlRotateReverse {
+  from { transform: rotate(360deg) scale(1.5); }
+  to   { transform: rotate(0deg) scale(1.5); }
 }
 
 .steel-bg {
@@ -123,17 +146,69 @@ body::after {
   background: conic-gradient(
     from 0deg at 50% 88%,
     transparent 0deg,
-    var(--shimmer-a) 40deg,
-    var(--shimmer-b) 90deg,
-    transparent 140deg,
-    var(--shimmer-a) 200deg,
-    transparent 270deg,
-    var(--shimmer-b) 320deg,
+    var(--shimmer-a) 30deg,
+    var(--shimmer-b) 80deg,
+    transparent 130deg,
+    var(--shimmer-a) 190deg,
+    transparent 260deg,
+    var(--shimmer-b) 310deg,
     transparent 360deg
   );
-  animation: swirlRotate 24s linear infinite;
+  animation: swirlRotate 20s linear infinite;
   pointer-events: none;
   mix-blend-mode: screen;
+}
+.steel-bg .swirl-layer-2 {
+  position: absolute;
+  inset: -60%;
+  background: conic-gradient(
+    from 90deg at 30% 60%,
+    transparent 0deg,
+    var(--glow-indigo) 60deg,
+    transparent 120deg,
+    var(--glow-orange) 210deg,
+    transparent 270deg,
+    var(--glow-indigo) 330deg,
+    transparent 360deg
+  );
+  animation: swirlRotateReverse 32s linear infinite;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* ── Page-level ambient glow backdrop ── */
+.page-ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.page-ambient::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(ellipse, var(--glow-indigo) 0%, transparent 70%);
+  animation: ambientDrift 18s ease-in-out infinite;
+}
+.page-ambient::after {
+  content: '';
+  position: absolute;
+  bottom: -10%;
+  right: -10%;
+  width: 50%;
+  height: 50%;
+  background: radial-gradient(ellipse, var(--glow-orange) 0%, transparent 70%);
+  animation: ambientDrift 24s ease-in-out infinite reverse;
+}
+
+@keyframes ambientDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(5%, 3%) scale(1.05); }
+  66%       { transform: translate(-3%, 5%) scale(0.97); }
 }
 
 /* ── Flowing accent gradient (text) ── */
@@ -144,16 +219,48 @@ body::after {
 .accent-flow {
   background: linear-gradient(90deg,
     var(--accent) 0%,
-    var(--accent2) 30%,
-    var(--steel) 60%,
+    var(--accent2) 25%,
+    var(--steel) 50%,
+    var(--accent2) 75%,
     var(--accent) 100%
   );
   background-size: 200% auto;
-  animation: accentFlow 5s linear infinite;
+  animation: accentFlow 4s linear infinite;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  filter: brightness(1.1);
 }
+
+/* ── Scanline flicker on stat numbers ── */
+@keyframes scanline {
+  0%, 100% { opacity: 1; }
+  92%       { opacity: 1; }
+  93%       { opacity: 0.85; }
+  94%       { opacity: 1; }
+  97%       { opacity: 0.9; }
+  98%       { opacity: 1; }
+}
+.stat-num {
+  animation: countUp 0.5s ease-out both, scanline 8s ease-in-out infinite;
+}
+
+/* ── Glow pulse on active dots ── */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 3px currentColor; opacity: 1; }
+  50%       { box-shadow: 0 0 10px currentColor, 0 0 20px currentColor; opacity: 0.8; }
+}
+.dot-glow {
+  animation: glowPulse 2.5s ease-in-out infinite;
+}
+
+/* ── Stagger delays (extended) ── */
+.stagger-1 { animation-delay: 0.06s; }
+.stagger-2 { animation-delay: 0.12s; }
+.stagger-3 { animation-delay: 0.18s; }
+.stagger-4 { animation-delay: 0.24s; }
+.stagger-5 { animation-delay: 0.30s; }
+.stagger-6 { animation-delay: 0.36s; }
 
 /* ── Shimmer sweep on hover ── */
 @keyframes shimmerSweep {
@@ -226,19 +333,12 @@ body::after {
 .animate-count-up      { animation: countUp 0.45s ease-out both; }
 .animate-border-pulse  { animation: borderPulse 3s ease-in-out infinite; }
 
-/* Stagger delays */
-.stagger-1 { animation-delay: 0.06s; }
-.stagger-2 { animation-delay: 0.12s; }
-.stagger-3 { animation-delay: 0.18s; }
-.stagger-4 { animation-delay: 0.24s; }
-
 /* ── Stat number metallic gradient ── */
 .stat-num {
-  background: linear-gradient(135deg, var(--foreground) 30%, var(--steel) 100%);
+  background: linear-gradient(135deg, var(--foreground) 20%, var(--steel) 60%, var(--accent2) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: countUp 0.5s ease-out both;
 }
 .stat-num.danger-text {
   background: linear-gradient(135deg, var(--danger) 0%, #ff8c5a 100%);
@@ -253,8 +353,23 @@ body::after {
 }
 .card-hover-glow:hover {
   background: var(--card-hover) !important;
-  box-shadow: inset 0 0 24px var(--accent2-glow), 0 0 0 1px var(--accent2);
+  box-shadow: inset 0 0 32px var(--accent2-glow), 0 0 0 1px var(--accent2), 0 4px 24px rgba(0,0,0,0.2);
   border-color: var(--accent2) !important;
+}
+
+/* ── Header glass effect ── */
+header {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(17, 17, 24, 0.88) !important;
+}
+:root.light header {
+  background: rgba(248, 247, 255, 0.88) !important;
+}
+
+/* ── Neon border on active agent cards ── */
+.agent-active-glow {
+  box-shadow: 0 0 0 1px var(--accent2), inset 0 0 20px var(--glow-indigo);
 }
 
 /* ── Tabular numbers ── */
