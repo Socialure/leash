@@ -5,7 +5,7 @@ services:
     region: ohio
     rootDir: app
     buildCommand: npm ci --include=dev && npm run build
-    startCommand: npm start
+    startCommand: npx next start -p 10000
     envVars:
       - key: PORT
         value: 10000
