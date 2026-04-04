@@ -1,4 +1,20 @@
 import Link from "next/link";
+import { CopyButton } from "./components/CopyButton";
+
+const AGENT_PROMPT = `You are connecting to LEASH — the visual dashboard for OpenWallet Standard (OWS).
+
+1. Introduce yourself: State your agent name and that you're ready to manage wallets via LEASH.
+2. Read current state: Check what agents and wallets are already registered at localhost:3847/api/agents — report what you find.
+3. Install if needed: If LEASH isn't running locally yet, clone https://github.com/Socialure/leash, then run: cd leash/app && npm install && npm run dev — it starts on localhost:3847.
+4. Register yourself: Open localhost:3847, create a wallet entry for yourself, set a spend budget and chain allowlist, then store the API key you receive.
+5. Report back: Confirm your agent name, wallet address, spend limit, and allowed chains. If any step fails, report the exact error.`.trim();
+
+const INSTALL_CMD = `git clone https://github.com/Socialure/leash
+cd leash/app
+npm install
+npm run dev`;
+
+const INSTALL_CMD_GLOBAL = `# Then open localhost:3847 in your browser`;
 
 export default function LandingPage() {
   return (
@@ -10,17 +26,20 @@ export default function LandingPage() {
           HEADER
       ══════════════════════════════════════════ */}
       <header className="leash-header">
+        {/* Animated gradient bar at top of header */}
+        <div className="leash-header-gradient" aria-hidden="true" />
         <div className="leash-header-inner">
           {/* Logo */}
           <div className="leash-logo-wrap">
             <span className="leash-logo">LEASH</span>
+            <span className="leash-logo-sep">·</span>
             <span className="leash-logo-tag">UI for OpenWallet Standard</span>
           </div>
 
           {/* Nav */}
-          <nav className="leash-nav">
+          <nav className="leash-nav" aria-label="Main navigation">
             <a href="#install" className="leash-nav-link">Install</a>
-            <a href="#architecture" className="leash-nav-link">Architecture</a>
+            <a href="#how-it-works" className="leash-nav-link">How it works</a>
             <a href="#features" className="leash-nav-link">Features</a>
             <a
               href="https://openwallet.sh"
@@ -28,7 +47,7 @@ export default function LandingPage() {
               rel="noopener noreferrer"
               className="leash-nav-link leash-nav-external"
             >
-              OWS Docs ↗
+              OWS ↗
             </a>
             <Link href="/dashboard" className="leash-btn-sm">
               Open Dashboard →
@@ -43,53 +62,51 @@ export default function LandingPage() {
       <section className="leash-hero">
         <div className="leash-hero-inner">
           <div className="leash-badge">
-            <span className="leash-badge-dot" />
-            Open Wallet Standard · v1.0.0
+            <span className="leash-badge-dot" aria-hidden="true" />
+            Built on Open Wallet Standard v1.0.0
           </div>
           <h1 className="leash-hero-title">
-            The visual dashboard
+            A beautiful dashboard
             <br />
             <span className="leash-hero-accent">for OpenWallet Standard.</span>
           </h1>
           <p className="leash-hero-sub">
-            Leash gives your OWS installation a face. Register agents, set
-            per-agent budgets, restrict chains and vendors — all from a clean
-            local UI. Keys never leave <code className="leash-inline-code">~/.ows/</code>.
+            OWS handles the policy engine, key management, and signing.
+            LEASH gives it a face — register your agents, configure spend
+            limits, restrict chains, and watch every transaction in real time.
+            Keys never leave{" "}
+            <code className="leash-inline-code">~/.ows/</code>.
           </p>
 
-          {/* Install command */}
-          <div className="leash-install-block">
-            <div className="leash-install-label">Install Leash</div>
-            <div className="leash-install-cmd">
-              <code>npx @open-wallet-standard/leash</code>
-              <button
-                className="leash-copy-btn"
-                onClick={undefined}
-                aria-label="Copy install command"
-                data-cmd="npx @open-wallet-standard/leash"
-              >
-                Copy
-              </button>
-            </div>
-            <p className="leash-install-note">
-              Installs OWS core + Leash UI. Opens on{" "}
-              <code className="leash-inline-code">localhost:3847</code>.
-              No cloud. No telemetry.
-            </p>
+          <div className="leash-hero-ctas">
+            <a href="#install" className="leash-btn-primary">
+              Get started in 30 seconds →
+            </a>
+            <Link href="/dashboard" className="leash-btn-ghost">
+              Preview dashboard
+            </Link>
           </div>
 
-          {/* Agent install CTA */}
+          {/* Agent connect pill — direct, no question */}
           <div className="leash-agent-pill">
-            <span className="leash-agent-pill-icon">🤖</span>
-            <span>
-              Using an agent? Point it at this page and say:{" "}
-              <em>&ldquo;Install Leash and set up OWS for me.&rdquo;</em>
+            <span className="leash-agent-pill-label" aria-label="For AI agents">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="3" />
+                <circle cx="9" cy="10" r="1.5" fill="currentColor" />
+                <circle cx="15" cy="10" r="1.5" fill="currentColor" />
+                <path d="M9 15 Q12 17.5 15 15" />
+              </svg>
+              Agents
+            </span>
+            <span className="leash-agent-pill-text">
+              Use the <strong>Copy for Agent</strong> button below — it gives you a structured
+              prompt to connect, read state, and start managing wallets.
             </span>
           </div>
         </div>
 
         {/* Dashboard mockup */}
-        <div className="leash-mockup-wrap">
+        <div className="leash-mockup-wrap" aria-hidden="true">
           <div className="leash-mockup-chrome">
             <div className="leash-mockup-bar">
               <span className="leash-dot leash-dot-red" />
@@ -97,15 +114,12 @@ export default function LandingPage() {
               <span className="leash-dot leash-dot-green" />
               <span className="leash-mockup-url">localhost:3847</span>
             </div>
-            {/* Inline mini-dashboard preview */}
             <div className="leash-mockup-content">
-              {/* header bar */}
               <div className="lm-header">
                 <span className="lm-logo">LEASH</span>
-                <span className="lm-tagline">Agent Spend Governance Dashboard</span>
-                <span className="lm-btn">Register Agent</span>
+                <span className="lm-tagline">OWS Dashboard</span>
+                <span className="lm-btn">+ Register Agent</span>
               </div>
-              {/* stats row */}
               <div className="lm-stats">
                 {[
                   { label: "Active Agents", value: "4", sub: "6 registered", color: "#a0b4d8" },
@@ -121,7 +135,6 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              {/* agents list */}
               <div className="lm-agents">
                 {[
                   { name: "The Trader", chain: "BASE", budget: "$100", used: 72, status: "active" },
@@ -154,95 +167,47 @@ export default function LandingPage() {
             </div>
           </div>
           <p className="leash-mockup-caption">
-            This is what Leash looks like running on your machine at localhost:3847
+            LEASH running at localhost:3847
           </p>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════
-          ARCHITECTURE
+          HOW IT WORKS
       ══════════════════════════════════════════ */}
-      <section id="architecture" className="leash-section">
+      <section id="how-it-works" className="leash-section">
         <div className="leash-section-inner">
-          <div className="leash-section-eyebrow">Architecture</div>
+          <div className="leash-section-eyebrow">How it works</div>
           <h2 className="leash-section-title">
-            Built on the OWS security model.
+            OWS does the heavy lifting.<br />LEASH makes it visible.
           </h2>
           <p className="leash-section-sub">
-            Leash is the UI layer on top of OpenWallet Standard. The full OWS
-            security model — policy engine, in-memory signing, key wiping —
-            is handled by OWS core. Leash just gives you the controls.
+            OpenWallet Standard handles policy enforcement, key security, and
+            transaction signing. LEASH is the dashboard that lets you configure
+            and observe all of it — no terminal required.
           </p>
 
-          {/* Architecture flow */}
-          <div className="leash-arch">
-            {/* agents column */}
-            <div className="leash-arch-col">
-              <div className="leash-arch-label">Your Agents</div>
-              {["Claude", "OpenAI", "The Trader", "Your Bot"].map((a) => (
-                <div key={a} className="leash-arch-pill">{a}</div>
-              ))}
-            </div>
-
-            {/* arrow */}
-            <div className="leash-arch-arrow">
-              <div className="leash-arch-arrow-line" />
-              <div className="leash-arch-arrow-label">MCP · SDK · CLI · REST</div>
-            </div>
-
-            {/* OWS stack */}
-            <div className="leash-arch-stack">
-              {[
-                { label: "OWS Interface", note: "Keys never cross this boundary", highlight: true },
-                { label: "Policy Engine", note: "Limits · allowlists · chain rules", highlight: false },
-                { label: "Signer", note: "mlock · zeroize · key wiped after use", highlight: false },
-                { label: "Wallet Vault", note: "~/.ows/wallets/", highlight: false },
-              ].map((layer, i) => (
-                <div key={i} className={`leash-arch-layer ${layer.highlight ? "leash-arch-layer-hi" : ""}`}>
-                  <div className="leash-arch-layer-label">{layer.label}</div>
-                  <div className="leash-arch-layer-note">{layer.note}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* arrow */}
-            <div className="leash-arch-arrow">
-              <div className="leash-arch-arrow-line" />
-              <div className="leash-arch-arrow-label">Signed tx · key wiped</div>
-            </div>
-
-            {/* output */}
-            <div className="leash-arch-col">
-              <div className="leash-arch-label">On-chain</div>
-              <div className="leash-arch-pill leash-arch-pill-out">ETH</div>
-              <div className="leash-arch-pill leash-arch-pill-out">BASE</div>
-              <div className="leash-arch-pill leash-arch-pill-out">SOL</div>
-              <div className="leash-arch-pill leash-arch-pill-out">BTC</div>
-            </div>
-          </div>
-
-          {/* 4-step flow */}
           <div className="leash-steps">
             {[
               {
                 n: "01",
-                title: "Request",
-                body: "Agent calls ows_sign via MCP, REST, or SDK with a chain ID and transaction object.",
+                title: "Register your agents",
+                body: "Add each agent to LEASH. It gets its own OWS wallet and a scoped API key — no raw keys ever leave your machine.",
               },
               {
                 n: "02",
-                title: "Policy Check",
-                body: "Spending limits, allowlists, chain restrictions, and simulation requirements are evaluated before any key is touched.",
+                title: "Configure spend rules",
+                body: "Set a daily budget per agent. Restrict which chains it can use. Add vendor allowlists. OWS enforces every rule before any key is touched.",
               },
               {
                 n: "03",
-                title: "Sign",
-                body: "Key is decrypted, transaction signed, key immediately wiped. Signed transaction returned to caller.",
+                title: "Connect your agents",
+                body: "Drop the API key into your agent's environment. When it needs to transact, it calls your local LEASH instance — OWS signs and returns the transaction.",
               },
               {
                 n: "04",
-                title: "Submit",
-                body: "If RPC URLs are configured, the signed transaction is broadcast on-chain and the transaction hash is returned.",
+                title: "Watch and control",
+                body: "Every transaction attempt appears in real time. See what was approved, what got blocked, and why. Pause any agent instantly from the dashboard.",
               },
             ].map((s) => (
               <div key={s.n} className="leash-step">
@@ -265,8 +230,8 @@ export default function LandingPage() {
             Up in 30 seconds.
           </h2>
           <p className="leash-section-sub leash-sub-light">
-            One command installs OWS core and the Leash UI. No accounts. No cloud.
-            Everything runs on your machine.
+            Clone the repo, install, and run. No accounts. No cloud.
+            Everything runs locally on your machine.
           </p>
 
           <div className="leash-install-steps">
@@ -274,17 +239,22 @@ export default function LandingPage() {
             <div className="leash-install-step">
               <div className="leash-install-step-n">1</div>
               <div className="leash-install-step-content">
-                <div className="leash-install-step-title">Install Leash</div>
+                <div className="leash-install-step-title">Clone and start LEASH</div>
                 <div className="leash-install-step-desc">
-                  Installs OWS core and the Leash dashboard.
+                  LEASH and OWS core install together. Dashboard opens on{" "}
+                  <code className="leash-inline-code">localhost:3847</code>.
                 </div>
                 <div className="leash-code-block">
-                  <pre><code>{`npx @open-wallet-standard/leash`}</code></pre>
+                  <pre><code>{INSTALL_CMD}</code></pre>
+                  <CopyButton
+                    text={INSTALL_CMD}
+                    label="Copy"
+                    successLabel="Copied!"
+                    className="leash-code-copy-btn"
+                  />
                 </div>
-                <div className="leash-code-block">
-                  <pre><code>{`# Or install globally
-npm install -g @open-wallet-standard/leash
-leash start`}</code></pre>
+                <div className="leash-code-block leash-code-block-comment">
+                  <pre><code>{INSTALL_CMD_GLOBAL}</code></pre>
                 </div>
               </div>
             </div>
@@ -293,10 +263,11 @@ leash start`}</code></pre>
             <div className="leash-install-step">
               <div className="leash-install-step-n">2</div>
               <div className="leash-install-step-content">
-                <div className="leash-install-step-title">Create your first wallet</div>
+                <div className="leash-install-step-title">Register your first agent</div>
                 <div className="leash-install-step-desc">
-                  Leash opens at localhost:3847. Click &ldquo;Register Agent&rdquo; to create an OWS
-                  wallet and issue an API key with a spend budget.
+                  Click <strong>&ldquo;Register Agent&rdquo;</strong> in the LEASH dashboard.
+                  Set a name, daily spend limit, and chain allowlist. LEASH creates
+                  an OWS wallet and issues a scoped API key.
                 </div>
                 <div className="leash-code-block">
                   <pre><code>{`# Or use the OWS CLI directly
@@ -311,10 +282,10 @@ ows policy create --wallet agent-treasury \\
             <div className="leash-install-step">
               <div className="leash-install-step-n">3</div>
               <div className="leash-install-step-content">
-                <div className="leash-install-step-title">Connect your agents</div>
+                <div className="leash-install-step-title">Connect your agent</div>
                 <div className="leash-install-step-desc">
-                  Pass the API key to your agent. It signs via OWS — no raw
-                  keys ever leave the vault.
+                  Add the API key to your agent&apos;s environment. It signs through
+                  your local LEASH instance — raw keys never leave the vault.
                 </div>
                 <div className="leash-code-block">
                   <pre><code>{`// Node.js — @open-wallet-standard/sdk
@@ -332,27 +303,32 @@ const { txHash } = await ows.sign({
             </div>
           </div>
 
-          {/* Agent install box */}
+          {/* Copy for Agent block */}
           <div className="leash-agent-install-box">
-            <div className="leash-agent-install-title">
-              <span className="leash-agent-install-icon">🤖</span>
-              Install via agent
+            <div className="leash-agent-install-header">
+              <div className="leash-agent-install-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="3" />
+                  <circle cx="9" cy="10" r="1.5" fill="currentColor" />
+                  <circle cx="15" cy="10" r="1.5" fill="currentColor" />
+                  <path d="M9 15 Q12 17.5 15 15" />
+                </svg>
+                Copy for Agent
+              </div>
+              <CopyButton
+                text={AGENT_PROMPT}
+                label="Copy prompt"
+                successLabel="Copied!"
+                className="leash-copy-for-agent-btn"
+              />
             </div>
             <p className="leash-agent-install-desc">
-              If you&apos;re running an AI agent (Claude Code, OpenAI, custom SDK), point it
-              at this URL and give it the following prompt:
+              If you&apos;re running an AI agent, copy this structured prompt and paste it in.
+              It tells the agent how to connect to LEASH, read wallet state, and register itself.
             </p>
-            <div className="leash-code-block leash-code-block-green">
-              <pre><code>{`Visit https://leash-zi0u.onrender.com and follow the
-install instructions to set up Leash (OpenWallet Standard UI)
-on this machine. Run: npx @open-wallet-standard/leash
-Then open localhost:3847 and register an agent named
-"<your-agent-name>" with a $50 daily budget on Base.`}</code></pre>
+            <div className="leash-agent-prompt-preview">
+              <pre><code>{AGENT_PROMPT}</code></pre>
             </div>
-            <p className="leash-agent-install-note">
-              The agent will run the install, start the dashboard, and register
-              itself — all without you touching a terminal.
-            </p>
           </div>
         </div>
       </section>
@@ -364,12 +340,12 @@ Then open localhost:3847 and register an agent named
         <div className="leash-section-inner">
           <div className="leash-section-eyebrow">Features</div>
           <h2 className="leash-section-title">
-            Everything OWS, in one place.
+            Every OWS capability.<br />One clean interface.
           </h2>
           <p className="leash-section-sub">
-            Leash is the visual interface for all six OWS principles. No
-            reinventing — just a clean UI over what the standard already
-            provides.
+            LEASH doesn&apos;t replace OWS — it exposes it. Every feature you see
+            maps directly to an OWS primitive. The standard does the work;
+            LEASH makes it accessible.
           </p>
 
           <div className="leash-features">
@@ -377,37 +353,37 @@ Then open localhost:3847 and register an agent named
               {
                 n: "01",
                 title: "Local-first",
-                body: "Your keys live in ~/.ows/ — not in a browser extension, not in the cloud. Leash runs at localhost:3847.",
+                body: "LEASH runs on your machine. Your OWS keys stay in ~/.ows/ — not in a browser extension, not in the cloud.",
                 tag: "~/.ows/wallets/",
               },
               {
                 n: "02",
-                title: "No API calls",
-                body: "Leash runs entirely on your machine. No HTTP to any vendor. No authentication flows. No rate limits.",
-                tag: "Offline capable",
+                title: "Visual spend tracking",
+                body: "See exactly what each agent spent, which transactions were blocked, and why — all without touching a terminal.",
+                tag: "Real-time dashboard",
               },
               {
                 n: "03",
-                title: "Multi-chain",
-                body: "One wallet, every chain. BTC, ETH, SOL, ATOM, TON, TRON — manage all from one dashboard.",
-                tag: "8 chains",
-              },
-              {
-                n: "04",
-                title: "Self-custody",
-                body: "Your keys. Your device. No remote signing. No custodians. Leash never uploads anything.",
-                tag: "Zero telemetry",
-              },
-              {
-                n: "05",
-                title: "Zero-trust",
-                body: "Agents authenticate with scoped API tokens. They never see plaintext keys. Leash lets you issue and revoke these.",
+                title: "Per-agent policies",
+                body: "Each agent gets its own spend limit, chain allowlist, and API key. Change or revoke any of them in two clicks.",
                 tag: "Per-agent keys",
               },
               {
+                n: "04",
+                title: "Instant pause",
+                body: "Something looks wrong? Freeze any agent immediately from the dashboard. Transactions stop at the policy layer — no on-chain action required.",
+                tag: "One-click control",
+              },
+              {
+                n: "05",
+                title: "Multi-chain",
+                body: "One LEASH instance manages wallets across ETH, Base, Solana, and more. Configure which chains each agent is allowed to use.",
+                tag: "8 chains",
+              },
+              {
                 n: "06",
-                title: "Composable",
-                body: "Works with any tool that speaks JSON. Leash adds a UI — the CLI, MCP, SDK, and REST interfaces still work.",
+                title: "Composable by design",
+                body: "LEASH adds a UI layer — the OWS CLI, MCP server, SDK, and REST interfaces still work exactly as documented.",
                 tag: "MCP · SDK · CLI · REST",
               },
             ].map((f) => (
@@ -423,55 +399,6 @@ Then open localhost:3847 and register an agent named
       </section>
 
       {/* ══════════════════════════════════════════
-          DASHBOARD PREVIEW (full screenshot)
-      ══════════════════════════════════════════ */}
-      <section className="leash-section leash-section-preview">
-        <div className="leash-section-inner">
-          <div className="leash-section-eyebrow">Dashboard Preview</div>
-          <h2 className="leash-section-title">
-            This is what it looks like on your machine.
-          </h2>
-          <p className="leash-section-sub">
-            A dark, high-signal control panel. See agent spend at a glance,
-            drill into individual policies, simulate transactions before they
-            happen, and audit every signed event.
-          </p>
-
-          <div className="leash-preview-wrap">
-            <div className="leash-preview-chrome">
-              <div className="leash-preview-bar">
-                <span className="leash-dot leash-dot-red" />
-                <span className="leash-dot leash-dot-yellow" />
-                <span className="leash-dot leash-dot-green" />
-                <span className="leash-preview-url">localhost:3847</span>
-              </div>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/leash-dashboard-preview.png"
-                alt="Leash dashboard running locally"
-                className="leash-preview-img"
-                width={1440}
-                height={916}
-              />
-            </div>
-            <div className="leash-preview-actions">
-              <Link href="/dashboard" className="leash-btn-primary">
-                Preview dashboard demo →
-              </Link>
-              <a
-                href="https://docs.openwallet.sh"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="leash-btn-ghost"
-              >
-                Read OWS docs ↗
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════
           FOOTER
       ══════════════════════════════════════════ */}
       <footer className="leash-footer">
@@ -482,7 +409,7 @@ Then open localhost:3847 and register an agent named
               UI Dashboard for OpenWallet Standard
             </span>
             <span className="leash-footer-note">
-              Local-first. Open source. Built for the agent era.
+              Local-first · Open source · Built for the agent era
             </span>
           </div>
           <div className="leash-footer-links">
@@ -492,7 +419,7 @@ Then open localhost:3847 and register an agent named
             <a href="https://docs.openwallet.sh" target="_blank" rel="noopener noreferrer">
               OWS Docs ↗
             </a>
-            <a href="https://github.com/Socialure" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/Socialure/leash" target="_blank" rel="noopener noreferrer">
               GitHub ↗
             </a>
             <Link href="/dashboard">Dashboard</Link>
