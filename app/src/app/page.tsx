@@ -168,20 +168,27 @@ export default function Dashboard() {
               <span className="theme-toggle-label">{isDark ? "Dark" : "Light"}</span>
             </button>
 
-            <a
-              href="https://openwallet.sh"
-              target="_blank"
-              rel="noopener"
-              className="hidden sm:block font-mono text-[10px] tracking-[0.12em] uppercase text-muted hover:text-foreground transition-colors"
-            >
-              Open Wallet ↗
-            </a>
             <button
               onClick={() => setShowAddAgent(true)}
               className="px-5 py-2 bg-foreground text-background text-[10px] font-mono uppercase tracking-[0.2em] hover:bg-foreground/85 transition-colors btn-shimmer"
             >
               Register Agent
             </button>
+
+            <a
+              href="https://openwallet.sh"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:flex items-center opacity-80 hover:opacity-100 transition-opacity"
+              aria-label="OpenWallet"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://openwallet.sh/header-logo.svg"
+                alt="OpenWallet"
+                style={{ height: 22, filter: "brightness(0) invert(1)" }}
+              />
+            </a>
           </div>
         </div>
         {/* Bottom shimmer line */}
