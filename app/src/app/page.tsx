@@ -1,41 +1,11 @@
 "use client";
 import Link from "next/link";
 import { CopyButton } from "./components/CopyButton";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 
-const ROTATING_WORDS = ["cool", "dope", "clean", "sharp", "slick"];
+const AGENT_PROMPT = `You are about to install and use LEASH — the local dashboard for Open Wallet Standard (OWS). Follow every step in order.
 
-function RotatingWord() {
-  const [idx, setIdx] = useState(0);
-  const [visible, setVisible] = useState(true);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setVisible(false);
-      setTimeout(() => {
-        setIdx((i) => (i + 1) % ROTATING_WORDS.length);
-        setVisible(true);
-      }, 200);
-    }, 2200);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <span
-      className="leash-rotating-word"
-      style={{ opacity: visible ? 1 : 0, transition: "opacity 0.2s ease" }}
-    >
-      {ROTATING_WORDS[idx]}
-    </span>
-  );
-}
-
-const AGENT_PROMPT = `You are about to set up and use LEASH — the local dashboard for Open Wallet Standard (OWS). Follow every step in order.
-
-STEP 1 — Check if LEASH is already running:
-Try fetching http://localhost:3847/api/agents. If you get a valid JSON response, skip to STEP 3.
-
-STEP 2 — Install and start LEASH (only if Step 1 failed):
+STEP 1 — Install LEASH:
 Run these commands in your terminal:
   git clone https://github.com/Socialure/leash
   cd leash/app
@@ -43,17 +13,17 @@ Run these commands in your terminal:
   npm run dev
 Wait until you see "Ready on http://localhost:3847". Then confirm with: curl http://localhost:3847/api/agents
 
-STEP 3 — Register yourself as an agent:
+STEP 2 — Register yourself as an agent:
 POST to http://localhost:3847/api/agents with JSON body:
   { "name": "<your agent name>", "role": "<your role>", "spendLimit": 100, "chains": ["eip155:8453"] }
 Save the "apiKey" field from the response — this is your OWS signing key.
 
-STEP 4 — Use your wallet:
+STEP 3 — Use your wallet:
 To sign a transaction, POST to http://localhost:3847/api/simulate:
   { "agentId": "<your agent id>", "chain": "eip155:8453", "amount": 10, "action": "swap" }
 LEASH will approve or deny based on your spend policy. Raw keys never leave the vault.
 
-STEP 5 — Report back:
+STEP 4 — Report back:
 Confirm: your agent name, wallet ID, spend limit, allowed chains, and API key (first 8 chars only). If any step failed, report the exact error message.`.trim();
 
 const INSTALL_CMD = `git clone https://github.com/Socialure/leash
@@ -124,12 +94,11 @@ export default function LandingPage() {
         <div className="leash-hero-inner">
           <div className="leash-badge">
             <span className="leash-badge-dot" aria-hidden="true" />
-            Built on Open Wallet Standard v1.0.0
+            Built on Open Standard v1.0.0
           </div>
           <h1 className="leash-hero-title">
-            A <RotatingWord /> <span className="leash-hero-word-stable">dashboard</span>
-            <br />
-            <span className="leash-hero-accent"> for Open Wallet Standard.</span>
+            A <span className="leash-hero-word-black">cool</span> dashboard{" "}
+            <span className="leash-hero-accent">for Open Wallet Standard.</span>
           </h1>
           <p className="leash-hero-sub">
             OWS handles the policy engine, key management, and signing.
@@ -160,9 +129,15 @@ export default function LandingPage() {
               Agents
             </span>
             <span className="leash-agent-pill-text">
-              Use the <strong>Copy for Agent</strong> button below — it gives you a structured
-              prompt to connect, read state, and start managing wallets.
+              Your Claw, Claude Code, Codex, or any other agent can manage wallets here.
+              Copy one prompt that tells it to install first, register next, and start transacting.
             </span>
+            <CopyButton
+              text={AGENT_PROMPT}
+              label="Copy prompt"
+              successLabel="Copied!"
+              className="leash-copy-for-agent-btn leash-pill-copy-btn"
+            />
           </div>
         </div>
 

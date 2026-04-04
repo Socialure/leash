@@ -664,6 +664,7 @@ header {
 
 .leash-hero-accent {
   color: #d97059;
+  white-space: nowrap;
 }
 
 .leash-hero-sub {
@@ -741,7 +742,8 @@ header {
 /* Agent pill */
 .leash-agent-pill {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   font-size: 13px;
   color: #4a4a6a;
@@ -749,7 +751,7 @@ header {
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
   padding: 12px 16px;
-  max-width: 440px;
+  max-width: 520px;
 }
 
 .leash-agent-pill em {
@@ -1773,6 +1775,13 @@ header {
   transform: translateY(0);
 }
 
+/* ── Pill copy button — compact version inside the agent pill ── */
+.leash-pill-copy-btn {
+  flex-shrink: 0;
+  padding: 5px 10px !important;
+  font-size: 12px !important;
+}
+
 /* ── Agent prompt preview ── */
 .leash-agent-prompt-preview {
   background: rgba(0, 0, 0, 0.4);
@@ -1805,6 +1814,14 @@ header {
   }
 }
 
+
+/* ── Static "cool" word in hero — black color ── */
+.leash-hero-word-black {
+  color: #0f0f1a;
+  font-weight: 700;
+}
+
+/* ── Hero accent — keep on one line ── */
 
 /* ── Rotating word in hero — fixed width so "dashboard" doesn't shift ── */
 .leash-rotating-word {
