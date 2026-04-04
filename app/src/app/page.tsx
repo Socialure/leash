@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import LeashShader from "./LeashShader";
 
 interface Agent {
   id: string;
@@ -143,7 +144,7 @@ export default function Dashboard() {
           {/* Wordmark */}
           <div className="flex items-center border-r border-card-border pr-8 py-5">
             <div className="flex items-baseline gap-2.5">
-              <span className="text-[20px] font-bold tracking-[-0.02em] leading-none steel-text">LEASH</span>
+              <LeashShader />
             </div>
           </div>
 
