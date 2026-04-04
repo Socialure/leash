@@ -1,15 +1,16 @@
-# 🐕 Leash — AI Agent Spend Governance Dashboard
+# 🐕 Leash — A Open Wallet Standard UI Dashboard
 
-**Put your AI agents on a leash.** Policy-gated wallet management for autonomous AI agents, powered by the [Open Wallet Standard](https://openwallet.sh).
+**Put your AI agents on a leash.** A GUI dashboard for the [Open Wallet Standard](https://openwallet.sh) — policy-gated wallet management for autonomous AI agents. Install Leash locally and get the full OWS interface alongside it.
 
-> **Marketing site**: [leash-zi0u.onrender.com](https://leash-zi0u.onrender.com) | **Website repo**: [Socialure/leash-website](https://github.com/Socialure/leash-website)
+> **Website**: [leash.directivecreator.com](https://leash.directivecreator.com)
 
 ## What is Leash?
 
-Leash is a **local dashboard** you install on your machine to manage AI agent spending. It solves the critical problem: **how do you let AI agents spend money without giving them unlimited access?**
+Leash is a **local GUI dashboard** that installs with the Open Wallet Standard, giving you a visual interface to manage AI agent spending. It solves the critical problem: **how do you let AI agents spend money without giving them unlimited access?**
 
-Each agent gets:
-- 🔐 **Its own OWS wallet** — encrypted, policy-gated, multi-chain
+Leash acts as the UI layer for OWS — when you install Leash, you get:
+- 🖥️ **A full OWS dashboard** — visual interface for all your agent wallets and policies
+- 🔐 **OWS-compatible wallets** — encrypted, policy-gated, multi-chain wallets per agent
 - 📋 **Chain allowlists** — restrict which blockchains an agent can operate on
 - 💰 **Spend limits** — daily caps enforced before any transaction is signed
 - 🔑 **API keys** — scoped access tokens tied to specific wallets + policies
@@ -44,7 +45,7 @@ curl -X POST http://localhost:3847/api/simulate \
   -d '{"agentId": "<your-agent-id>", "chain": "eip155:8453", "amount": 10, "action": "swap"}'
 ```
 
-Leash approves or denies based on the agent's spend policy. Raw keys never leave the vault.
+Leash approves or denies based on the agent's spend policy. Raw keys never leave the vault because of the power of the Open Wallet Standard.
 
 ## Check Treasury / Wallet Balance
 
