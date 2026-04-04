@@ -5,7 +5,7 @@ services:
     region: ohio
     rootDir: app
     buildCommand: npm ci --include=dev && npm run build
-    startCommand: cp -r .next/static .next/standalone/app/.next/static && cp -r public .next/standalone/app/public && node .next/standalone/app/server.js
+    startCommand: npm start
     envVars:
       - key: PORT
         value: 10000
