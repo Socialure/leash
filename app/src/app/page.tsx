@@ -1,5 +1,34 @@
+"use client";
 import Link from "next/link";
 import { CopyButton } from "./components/CopyButton";
+import { useEffect, useState, useRef } from "react";
+
+const ROTATING_WORDS = ["cool", "dope", "clean", "sharp", "slick"];
+
+function RotatingWord() {
+  const [idx, setIdx] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setIdx((i) => (i + 1) % ROTATING_WORDS.length);
+        setVisible(true);
+      }, 200);
+    }, 2200);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <span
+      className="leash-rotating-word"
+      style={{ opacity: visible ? 1 : 0, transition: "opacity 0.2s ease" }}
+    >
+      {ROTATING_WORDS[idx]}
+    </span>
+  );
+}
 
 const AGENT_PROMPT = `You are connecting to LEASH — the visual dashboard for OpenWallet Standard (OWS).
 
@@ -17,6 +46,23 @@ npm run dev`;
 const INSTALL_CMD_GLOBAL = `# Then open localhost:3847 in your browser`;
 
 export default function LandingPage() {
+  const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const onScroll = () => {
+      if (!headerRef.current) return;
+      const scrolled = window.scrollY;
+      // Start at 0.82 opacity, increase to 0.97 by 80px scroll
+      const opacity = Math.min(0.97, 0.82 + (scrolled / 80) * 0.15);
+      headerRef.current.style.setProperty("--header-bg-opacity", String(opacity));
+      // Fade out header content mask: full at 0, start fading at 60px
+      const maskAlpha = Math.max(0, 1 - scrolled / 120);
+      headerRef.current.style.setProperty("--header-content-fade", String(maskAlpha));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <div className="leash-landing">
       {/* ── Ambient background ── */}
@@ -25,7 +71,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           HEADER
       ══════════════════════════════════════════ */}
-      <header className="leash-header">
+      <header className="leash-header" ref={headerRef}>
         {/* Animated gradient bar at top of header */}
         <div className="leash-header-gradient" aria-hidden="true" />
         <div className="leash-header-inner">
@@ -66,7 +112,7 @@ export default function LandingPage() {
             Built on Open Wallet Standard v1.0.0
           </div>
           <h1 className="leash-hero-title">
-            A beautiful dashboard
+            A <RotatingWord /> dashboard
             <br />
             <span className="leash-hero-accent">for OpenWallet Standard.</span>
           </h1>
@@ -410,7 +456,7 @@ const { txHash } = await ows.sign({
               Dashboard for Open Wallet Standard 🐕
             </span>
             <span className="leash-footer-note">
-              Local-first · Open source · Built for the agent era
+              Local-first · Open source
             </span>
           </div>
           <div className="leash-footer-links">
@@ -427,7 +473,7 @@ const { txHash } = await ows.sign({
           </div>
         </div>
         <div className="leash-footer-bottom">
-          Dashboard for Open Wallet Standard 🐕 · Open source · No telemetry · Keys never leave your machine
+          Dashboard for Open Wallet Standard 🐕
         </div>
       </footer>
     </div>

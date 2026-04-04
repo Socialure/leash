@@ -30,30 +30,30 @@
 
 /* ── Light Mode ── */
 :root.light {
-  --background: #f8f7ff;
-  --foreground: #16162a;
-  --card: #eeedf8;
-  --card-border: #d0ceee;
-  --card-hover: #e4e3f5;
-  --muted: #8080b0;
+  --background: #fdf9f6;
+  --foreground: #1a1a2e;
+  --card: #f5f0ea;
+  --card-border: #e0d8ce;
+  --card-hover: #ede8e0;
+  --muted: #8a7a6a;
   --accent: #e04020;
   --accent-dim: #b43318;
   --accent-glow: rgba(224, 64, 32, 0.12);
   --accent2: #5558e8;
   --accent2-glow: rgba(85, 88, 232, 0.14);
-  --steel: #4f6aa0;
-  --steel-dim: #354e80;
-  --shimmer-a: rgba(85, 88, 232, 0.07);
-  --shimmer-b: rgba(79, 106, 160, 0.05);
+  --steel: #5a6a8a;
+  --steel-dim: #3a4e70;
+  --shimmer-a: rgba(254, 200, 160, 0.15);
+  --shimmer-b: rgba(124, 127, 255, 0.08);
   --success: #1aaa64;
   --warning: #c8860a;
   --danger: #e04020;
-  --surface: #efeefc;
-  --border-light: #c4c2e4;
-  --rule: #dddcf0;
-  --grain-opacity: 0.025;
-  --glow-indigo: rgba(85, 88, 232, 0.06);
-  --glow-orange: rgba(224, 64, 32, 0.06);
+  --surface: #f8f2ec;
+  --border-light: #ddd5ca;
+  --rule: #ede5da;
+  --grain-opacity: 0.02;
+  --glow-indigo: rgba(124, 127, 255, 0.08);
+  --glow-orange: rgba(254, 200, 160, 0.25);
 }
 
 @theme inline {
@@ -1805,3 +1805,69 @@ header {
   }
 }
 
+
+/* ── Rotating word in hero ── */
+.leash-rotating-word {
+  display: inline-block;
+  color: var(--accent2);
+  min-width: 80px;
+}
+
+/* ── Header scroll-reactive opacity ── */
+.leash-header {
+  --header-bg-opacity: 0.82;
+  --header-content-fade: 1;
+  background: rgba(253, 249, 246, var(--header-bg-opacity)) !important;
+}
+
+/* Fade out header inner content when scrolling */
+.leash-header-inner {
+  opacity: var(--header-content-fade);
+  transition: opacity 0.1s ease;
+}
+
+/* ── Footer redesign — OWS warm style ── */
+.leash-footer {
+  background: linear-gradient(
+    to bottom,
+    rgba(253, 249, 246, 0.0) 0%,
+    rgba(248, 244, 238, 0.95) 30%,
+    rgba(245, 240, 232, 1) 100%
+  ) !important;
+  border-top: none !important;
+}
+
+.leash-footer::before {
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(254, 200, 160, 0.5) 25%,
+    rgba(124, 127, 255, 0.25) 50%,
+    rgba(254, 200, 160, 0.5) 75%,
+    transparent 100%
+  ) !important;
+}
+
+.leash-footer-logo {
+  color: #1a1a2e !important;
+}
+
+.leash-footer-tagline {
+  color: #6a5a4a !important;
+}
+
+.leash-footer-note {
+  color: #8a7a6a !important;
+}
+
+.leash-footer-links a {
+  color: #6a5a4a !important;
+}
+
+.leash-footer-links a:hover {
+  color: #00a870 !important;
+}
+
+.leash-footer-bottom {
+  color: #8a7a6a !important;
+  border-top-color: rgba(0, 0, 0, 0.07) !important;
+}

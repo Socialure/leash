@@ -174,7 +174,7 @@ export default function Dashboard() {
           {/* Center descriptor */}
           <div className="hidden md:flex items-center px-8 border-r border-card-border flex-1">
             <div>
-              <p className="font-mono text-[10px] tracking-[0.2em] uppercase" style={{ color: '#ede9ff' }}>
+              <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-foreground">
                 Demo Dashboard · Open Wallet Standard 🐕
               </p>
               <p className="font-mono text-[9px] text-muted mt-0.5 tracking-[0.1em]">
@@ -208,15 +208,10 @@ export default function Dashboard() {
               href="https://openwallet.sh"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex items-center opacity-80 hover:opacity-100 transition-opacity"
+              className="hidden sm:flex items-center font-mono text-[10px] uppercase tracking-[0.15em] text-muted hover:text-foreground transition-colors"
               aria-label="OpenWallet"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://openwallet.sh/header-logo.svg"
-                alt="OpenWallet"
-                style={{ height: 22, filter: "brightness(0) invert(1)" }}
-              />
+              OWS ↗
             </a>
           </div>
         </div>
