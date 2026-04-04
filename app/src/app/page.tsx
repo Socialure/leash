@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
 interface Agent {
   id: string;
@@ -102,6 +102,17 @@ export default function Dashboard() {
     fetchData();
   };
 
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDark) {
+      root.classList.remove("light");
+    } else {
+      root.classList.add("light");
+    }
+  }, [isDark]);
+
   const totalSpend = agents.reduce((s, a) => s + a.spendToday, 0);
   const totalLimit = agents.reduce((s, a) => s + a.spendLimit, 0);
   const totalTx = agents.reduce((s, a) => s + a.txCount, 0);
@@ -121,12 +132,15 @@ export default function Dashboard() {
     <div className="min-h-screen flex flex-col bg-background text-foreground">
 
       {/* ─── Header ─── */}
-      <header className="border-b border-card-border">
-        <div className="max-w-[1200px] mx-auto px-8 flex items-stretch justify-between">
+      <header className="border-b border-card-border steel-bg">
+        <div className="swirl-layer" />
+        {/* Animated top border line */}
+        <div className="header-line" />
+        <div className="max-w-[1200px] mx-auto px-8 flex items-stretch justify-between relative z-10">
           {/* Wordmark */}
           <div className="flex items-center border-r border-card-border pr-8 py-5">
             <div className="flex items-baseline gap-2.5">
-              <span className="text-[20px] font-bold tracking-[-0.02em] leading-none">LEASH</span>
+              <span className="text-[20px] font-bold tracking-[-0.02em] leading-none accent-flow">LEASH</span>
               <span className="font-mono text-[9px] text-muted tracking-[0.25em] uppercase">v0.1</span>
             </div>
           </div>
@@ -138,24 +152,38 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {/* Right CTA */}
-          <div className="flex items-center gap-6 pl-8 py-5">
+          {/* Right controls */}
+          <div className="flex items-center gap-5 pl-8 py-5">
+            {/* Dark/Light toggle */}
+            <button
+              onClick={() => setIsDark(!isDark)}
+              className="theme-toggle"
+              aria-label="Toggle dark/light mode"
+            >
+              <div className="theme-toggle-track">
+                <div className="theme-toggle-thumb" />
+              </div>
+              <span className="theme-toggle-label">{isDark ? "Dark" : "Light"}</span>
+            </button>
+
             <a
               href="https://openwallet.sh"
               target="_blank"
               rel="noopener"
               className="hidden sm:block font-mono text-[10px] tracking-[0.12em] uppercase text-muted hover:text-foreground transition-colors"
             >
-              Open Wallet Standard ↗
+              Open Wallet ↗
             </a>
             <button
               onClick={() => setShowAddAgent(true)}
-              className="px-5 py-2 bg-foreground text-background text-[10px] font-mono uppercase tracking-[0.2em] hover:bg-foreground/85 transition-colors"
+              className="px-5 py-2 bg-foreground text-background text-[10px] font-mono uppercase tracking-[0.2em] hover:bg-foreground/85 transition-colors btn-shimmer"
             >
               Register Agent
             </button>
           </div>
         </div>
+        {/* Bottom shimmer line */}
+        <div className="header-line opacity-30" />
       </header>
 
       <main className="flex-1 max-w-[1200px] mx-auto w-full px-8">
@@ -170,6 +198,7 @@ export default function Dashboard() {
               danger: false,
               bar: false,
               pct: 0,
+              accent: "steel",
             },
             {
               label: "Spend Today",
@@ -178,6 +207,7 @@ export default function Dashboard() {
               danger: false,
               bar: true,
               pct: spendPct,
+              accent: "accent2",
             },
             {
               label: "Transactions",
@@ -186,6 +216,7 @@ export default function Dashboard() {
               danger: false,
               bar: false,
               pct: 0,
+              accent: "steel",
             },
             {
               label: "Blocked",
@@ -194,26 +225,44 @@ export default function Dashboard() {
               danger: deniedCount > 0,
               bar: false,
               pct: 0,
+              accent: "danger",
             },
           ].map((stat, i) => (
             <div
               key={stat.label}
-              className={`py-8 px-6 ${i < 3 ? "border-r border-card-border" : ""}`}
+              className={`py-8 px-6 animate-fade-in stagger-${i + 1} transition-colors hover:bg-card-hover ${i < 3 ? "border-r border-card-border" : ""}`}
             >
-              <p className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted mb-3">
-                {stat.label}
-              </p>
+              <div className="flex items-center gap-2 mb-3">
+                <span
+                  className="w-1 h-1 rounded-full flex-shrink-0"
+                  style={{
+                    background: stat.danger
+                      ? "var(--danger)"
+                      : i === 1
+                      ? "var(--accent2)"
+                      : "var(--steel)",
+                    boxShadow: stat.danger
+                      ? "0 0 4px var(--danger)"
+                      : i === 1
+                      ? "0 0 4px var(--accent2)"
+                      : "0 0 4px var(--steel)",
+                  }}
+                />
+                <p className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted">
+                  {stat.label}
+                </p>
+              </div>
               <p
-                className={`text-[38px] font-bold leading-none tabular-nums tracking-[-0.03em] ${
-                  stat.danger ? "text-danger" : ""
+                className={`text-[38px] font-bold leading-none tabular-nums tracking-[-0.03em] stat-num animate-count-up stagger-${i + 1} ${
+                  stat.danger ? "danger-text" : ""
                 }`}
               >
                 {stat.value}
               </p>
               {stat.bar && (
-                <div className="mt-3 mb-1 h-[1px] bg-card-border w-full overflow-hidden">
+                <div className="mt-3 mb-1 h-[2px] bg-card-border w-full overflow-hidden rounded-full">
                   <div
-                    className="h-full transition-all duration-700"
+                    className="h-full bar-animated bar-glow"
                     style={{
                       width: `${Math.min(stat.pct, 100)}%`,
                       backgroundColor:
@@ -221,7 +270,13 @@ export default function Dashboard() {
                           ? "var(--danger)"
                           : stat.pct > 60
                           ? "var(--warning)"
-                          : "var(--foreground)",
+                          : "var(--accent2)",
+                      color:
+                        stat.pct > 80
+                          ? "var(--danger)"
+                          : stat.pct > 60
+                          ? "var(--warning)"
+                          : "var(--accent2)",
                     }}
                   />
                 </div>
@@ -286,7 +341,7 @@ export default function Dashboard() {
                 activity.map((log) => (
                   <div
                     key={log.id}
-                    className="px-6 py-3.5 border-b border-card-border animate-fade-in"
+                    className="px-6 py-3.5 border-b border-card-border animate-fade-in-left hover:bg-card-hover transition-colors"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
@@ -356,9 +411,9 @@ export default function Dashboard() {
             ].map((s, i) => (
               <div
                 key={s.n}
-                className={`px-8 py-10 ${i < 3 ? "border-r border-card-border" : ""}`}
+                className={`px-8 py-10 animate-fade-in stagger-${i + 1} hover:bg-card-hover transition-colors ${i < 3 ? "border-r border-card-border" : ""}`}
               >
-                <span className="font-mono text-[9px] text-accent tracking-[0.2em]">{s.n}</span>
+                <span className="font-mono text-[9px] arch-num tracking-[0.2em]">{s.n}</span>
                 <h3 className="text-[20px] font-bold mt-4 mb-3 tracking-[-0.02em]">{s.title}</h3>
                 <p className="text-[12px] text-muted leading-relaxed">{s.desc}</p>
               </div>
@@ -469,13 +524,20 @@ function StatusDot({ status }: { status: string }) {
   return (
     <div className="flex items-center gap-1.5 flex-shrink-0">
       <span
-        className={`w-1 h-1 rounded-full flex-shrink-0 ${
+        className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
           status === "approved"
             ? "bg-success animate-pulse-dot"
             : status === "denied"
             ? "bg-danger"
             : "bg-warning"
         }`}
+        style={{
+          boxShadow: status === "approved"
+            ? "0 0 5px var(--success)"
+            : status === "denied"
+            ? "0 0 5px var(--danger)"
+            : "0 0 5px var(--warning)",
+        }}
       />
       <span
         className={`font-mono text-[9px] uppercase tracking-[0.15em] ${
@@ -514,10 +576,10 @@ function AgentRow({
   const pct = agent.spendLimit > 0 ? (agent.spendToday / agent.spendLimit) * 100 : 0;
 
   return (
-    <div className={`border-b border-card-border transition-colors ${isSelected ? "bg-card" : ""}`}>
+    <div className={`border-b border-card-border transition-all ${isSelected ? "bg-card" : ""}`}>
       {/* Main row */}
       <div
-        className="px-6 py-4 flex items-center gap-4 cursor-pointer group hover:bg-card transition-colors"
+        className="px-6 py-4 flex items-center gap-4 cursor-pointer group hover:bg-card-hover transition-colors card-hover-glow"
         onClick={onSelect}
       >
         <div
@@ -547,9 +609,9 @@ function AgentRow({
             </span>
             <span className="font-mono text-[10px] text-muted tabular-nums">${agent.spendLimit}</span>
           </div>
-          <div className="h-[1px] bg-card-border w-full overflow-hidden">
+          <div className="h-[2px] bg-card-border w-full overflow-hidden rounded-full">
             <div
-              className="h-full transition-all duration-700"
+              className="h-full bar-animated bar-glow"
               style={{
                 width: `${Math.min(pct, 100)}%`,
                 backgroundColor:
@@ -557,7 +619,13 @@ function AgentRow({
                     ? "var(--danger)"
                     : pct > 60
                     ? "var(--warning)"
-                    : "var(--foreground)",
+                    : "var(--accent2)",
+                color:
+                  pct > 80
+                    ? "var(--danger)"
+                    : pct > 60
+                    ? "var(--warning)"
+                    : "var(--accent2)",
               }}
             />
           </div>
