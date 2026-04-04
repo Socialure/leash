@@ -1,20 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f5f0e8;
-  --foreground: #141210;
-  --card: #fffcf7;
-  --card-border: #e0dbd2;
-  --card-hover: #f8f5ee;
-  --muted: #9c9589;
-  --accent: #c84b31;
-  --accent-dim: #a63d24;
-  --accent-glow: rgba(200, 75, 49, 0.08);
-  --success: #2a7c4f;
-  --warning: #c49200;
-  --danger: #c84b31;
-  --surface: #eee9df;
-  --border-light: #d4cfc5;
+  --background: #080808;
+  --foreground: #f2ede8;
+  --card: #0f0f0f;
+  --card-border: #1e1e1e;
+  --card-hover: #141414;
+  --muted: #525252;
+  --accent: #ff4a1c;
+  --accent-dim: #cc3b16;
+  --accent-glow: rgba(255, 74, 28, 0.08);
+  --success: #3dd68c;
+  --warning: #f0a500;
+  --danger: #ff4a1c;
+  --surface: #0c0c0c;
+  --border-light: #2a2a2a;
+  --rule: #1a1a1a;
 }
 
 @theme inline {
@@ -32,6 +33,7 @@
   --color-danger: var(--danger);
   --color-surface: var(--surface);
   --color-border-light: var(--border-light);
+  --color-rule: var(--rule);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -43,38 +45,38 @@ body {
 }
 
 /* Minimal scrollbar */
-::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar { width: 2px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 0; }
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes fadeInScale {
-  from { opacity: 0; transform: scale(0.97); }
+  from { opacity: 0; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1); }
 }
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.25; }
+  50% { opacity: 0.2; }
 }
 @keyframes slideDown {
   from { opacity: 0; max-height: 0; }
   to { opacity: 1; max-height: 600px; }
 }
 
-.animate-fade-in { animation: fadeIn 0.25s ease-out; }
-.animate-fade-in-scale { animation: fadeInScale 0.2s ease-out; }
-.animate-pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+.animate-fade-in { animation: fadeIn 0.2s ease-out; }
+.animate-fade-in-scale { animation: fadeInScale 0.18s ease-out; }
+.animate-pulse-dot { animation: pulse-dot 2.4s ease-in-out infinite; }
 .animate-slide-down { animation: slideDown 0.3s ease-out; }
 
 /* Tabular numbers */
 .tabular-nums { font-variant-numeric: tabular-nums; }
 
 /* Selection */
-::selection { background: rgba(200, 75, 49, 0.12); }
+::selection { background: rgba(255, 74, 28, 0.15); }
 
 /* Gradient fade for bottom of activity log */
 .fade-bottom {

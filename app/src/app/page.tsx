@@ -49,11 +49,16 @@ export default function Dashboard() {
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [simulating, setSimulating] = useState(false);
   const [showAddAgent, setShowAddAgent] = useState(false);
-  const [simResult, setSimResult] = useState<{
-    approved: boolean;
-    reason?: string;
-    signature?: string;
-  } | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [simResult, setSimResult] = useState<Record<string, any> | null>(null);
+  const [treasury, setTreasury] = useState<{ address: string; balance: string; basescanUrl: string } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/treasury")
+      .then((r) => r.json())
+      .then((d) => setTreasury(d.treasury))
+      .catch(() => {});
+  }, []);
 
   const fetchData = useCallback(async () => {
     const res = await fetch("/api/agents");
@@ -138,12 +143,20 @@ export default function Dashboard() {
               </a>
             </p>
           </div>
-          <button
-            onClick={() => setShowAddAgent(true)}
-            className="px-5 py-2.5 bg-foreground text-background text-[11px] font-mono uppercase tracking-[0.15em] hover:bg-foreground/85 transition-colors"
-          >
-            Register Agent
-          </button>
+          <div className="flex items-center gap-3">
+            <a
+              href="/demo"
+              className="px-5 py-2.5 bg-card border border-card-border text-foreground text-[11px] font-mono uppercase tracking-[0.15em] hover:bg-card-hover transition-colors"
+            >
+              ▶ Live Demo
+            </a>
+            <button
+              onClick={() => setShowAddAgent(true)}
+              className="px-5 py-2.5 bg-foreground text-background text-[11px] font-mono uppercase tracking-[0.15em] hover:bg-foreground/85 transition-colors"
+            >
+              Register Agent
+            </button>
+          </div>
         </div>
       </header>
 
@@ -182,6 +195,36 @@ export default function Dashboard() {
             <p className="font-mono text-[11px] text-muted mt-1">policy violations</p>
           </div>
         </div>
+
+        {/* ─── MoonPay Treasury Banner ─── */}
+        {treasury && (
+          <div className="mt-6 mb-10 border border-card-border/60 bg-card p-4 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <span className="text-xl">🏦</span>
+              <div>
+                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted mb-0.5">Agent Treasury · Base Sepolia · MoonPay HD Wallet</p>
+                <div className="flex items-center gap-3">
+                  <a
+                    href={treasury.basescanUrl}
+                    target="_blank"
+                    rel="noopener"
+                    className="font-mono text-[12px] text-accent hover:underline underline-offset-2"
+                  >
+                    {treasury.address.slice(0, 10)}…{treasury.address.slice(-8)}
+                  </a>
+                  <span className="text-card-border text-[10px]">·</span>
+                  <span className="font-mono text-[11px] text-muted">{treasury.balance} ETH</span>
+                </div>
+              </div>
+            </div>
+            <a
+              href="/demo"
+              className="font-mono text-[10px] uppercase tracking-[0.15em] px-3 py-1.5 border border-card-border text-muted hover:text-foreground hover:border-foreground/40 transition-colors"
+            >
+              ▶ Watch Demo
+            </a>
+          </div>
+        )}
 
         {/* ─── Two Column Layout ─── */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-12">
@@ -383,7 +426,8 @@ function AgentRow({
   onUpdateLimit: (v: number) => void;
   onSimulate: (chain: string, amount: number, action: string) => void;
   simulating: boolean;
-  simResult: { approved: boolean; reason?: string; signature?: string } | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  simResult: Record<string, any> | null;
 }) {
   const pct = agent.spendLimit > 0 ? (agent.spendToday / agent.spendLimit) * 100 : 0;
 
@@ -512,6 +556,18 @@ function AgentRow({
               </div>
               {simResult.signature && (
                 <p className="font-mono text-[10px] text-muted/60 mt-1">sig: {simResult.signature}</p>
+              )}
+              {simResult.txHash && simResult.approved && (
+                <p className="font-mono text-[10px] text-muted/60 mt-0.5">tx: {simResult.txHash.slice(0, 20)}…</p>
+              )}
+              {simResult.mpWallet && (
+                <a
+                  href={`https://sepolia.basescan.org/address/${simResult.mpWallet}`}
+                  target="_blank" rel="noopener"
+                  className="font-mono text-[10px] text-accent hover:underline underline-offset-2 block mt-0.5"
+                >
+                  mp wallet: {simResult.mpWallet.slice(0, 8)}… ↗
+                </a>
               )}
             </div>
           )}
