@@ -158,7 +158,7 @@ export default function Dashboard() {
         <div className="header-line" />
         <div className="max-w-[1200px] mx-auto px-8 flex items-stretch justify-between relative z-10">
           {/* Wordmark + back link */}
-          <div className="flex items-center border-r border-card-border pr-8 py-5 gap-5">
+          <div className="flex items-center pr-8 py-5 gap-5">
             <Link
               href="/"
               className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted hover:text-foreground transition-colors flex items-center gap-1.5"
@@ -172,13 +172,10 @@ export default function Dashboard() {
           </div>
 
           {/* Center descriptor */}
-          <div className="hidden md:flex items-center px-8 border-r border-card-border flex-1">
+          <div className="hidden md:flex items-center px-8 flex-1">
             <div>
               <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-foreground">
                 Demo Dashboard · Open Wallet Standard 🐕
-              </p>
-              <p className="font-mono text-[9px] text-muted mt-0.5 tracking-[0.1em]">
-                localhost:3847 · Keys never leave your machine
               </p>
             </div>
           </div>
@@ -222,7 +219,7 @@ export default function Dashboard() {
       <main className="flex-1 max-w-[1200px] mx-auto w-full px-8 relative z-10">
 
         {/* ─── Stats Grid ─── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 border-b border-card-border">
+        <div className="grid grid-cols-2 sm:grid-cols-4 border-b border-card-border divide-x divide-card-border">
           {[
             {
               label: "Active Agents",
@@ -263,7 +260,7 @@ export default function Dashboard() {
           ].map((stat, i) => (
             <div
               key={stat.label}
-              className={`py-8 px-6 animate-fade-in stagger-${i + 1} transition-colors hover:bg-card-hover ${i < 3 ? "border-r border-card-border" : ""}`}
+              className={`py-8 px-6 animate-fade-in stagger-${i + 1} transition-colors hover:bg-card-hover`}
             >
               <div className="flex items-center gap-2 mb-3">
                 <span

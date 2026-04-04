@@ -30,13 +30,31 @@ function RotatingWord() {
   );
 }
 
-const AGENT_PROMPT = `You are connecting to LEASH — the visual dashboard for OpenWallet Standard (OWS).
+const AGENT_PROMPT = `You are about to set up and use LEASH — the local dashboard for Open Wallet Standard (OWS). Follow every step in order.
 
-1. Introduce yourself: State your agent name and that you're ready to manage wallets via LEASH.
-2. Read current state: Check what agents and wallets are already registered at localhost:3847/api/agents — report what you find.
-3. Install if needed: If LEASH isn't running locally yet, clone https://github.com/Socialure/leash, then run: cd leash/app && npm install && npm run dev — it starts on localhost:3847.
-4. Register yourself: Open localhost:3847, create a wallet entry for yourself, set a spend budget and chain allowlist, then store the API key you receive.
-5. Report back: Confirm your agent name, wallet address, spend limit, and allowed chains. If any step fails, report the exact error.`.trim();
+STEP 1 — Check if LEASH is already running:
+Try fetching http://localhost:3847/api/agents. If you get a valid JSON response, skip to STEP 3.
+
+STEP 2 — Install and start LEASH (only if Step 1 failed):
+Run these commands in your terminal:
+  git clone https://github.com/Socialure/leash
+  cd leash/app
+  npm install
+  npm run dev
+Wait until you see "Ready on http://localhost:3847". Then confirm with: curl http://localhost:3847/api/agents
+
+STEP 3 — Register yourself as an agent:
+POST to http://localhost:3847/api/agents with JSON body:
+  { "name": "<your agent name>", "role": "<your role>", "spendLimit": 100, "chains": ["eip155:8453"] }
+Save the "apiKey" field from the response — this is your OWS signing key.
+
+STEP 4 — Use your wallet:
+To sign a transaction, POST to http://localhost:3847/api/simulate:
+  { "agentId": "<your agent id>", "chain": "eip155:8453", "amount": 10, "action": "swap" }
+LEASH will approve or deny based on your spend policy. Raw keys never leave the vault.
+
+STEP 5 — Report back:
+Confirm: your agent name, wallet ID, spend limit, allowed chains, and API key (first 8 chars only). If any step failed, report the exact error message.`.trim();
 
 const INSTALL_CMD = `git clone https://github.com/Socialure/leash
 cd leash/app
@@ -52,12 +70,9 @@ export default function LandingPage() {
     const onScroll = () => {
       if (!headerRef.current) return;
       const scrolled = window.scrollY;
-      // Start at 0.82 opacity, increase to 0.97 by 80px scroll
-      const opacity = Math.min(0.97, 0.82 + (scrolled / 80) * 0.15);
+      // Header stays solid — increase opacity slightly on scroll
+      const opacity = Math.min(0.98, 0.92 + (scrolled / 80) * 0.06);
       headerRef.current.style.setProperty("--header-bg-opacity", String(opacity));
-      // Fade out header content mask: full at 0, start fading at 60px
-      const maskAlpha = Math.max(0, 1 - scrolled / 120);
-      headerRef.current.style.setProperty("--header-content-fade", String(maskAlpha));
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -112,9 +127,9 @@ export default function LandingPage() {
             Built on Open Wallet Standard v1.0.0
           </div>
           <h1 className="leash-hero-title">
-            A <RotatingWord /> dashboard
+            A <RotatingWord /> <span className="leash-hero-word-stable">dashboard</span>
             <br />
-            <span className="leash-hero-accent">for OpenWallet Standard.</span>
+            <span className="leash-hero-accent"> for Open Wallet Standard.</span>
           </h1>
           <p className="leash-hero-sub">
             OWS handles the policy engine, key management, and signing.
@@ -309,7 +324,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="leash-install-steps">
+          <div className="leash-install-steps leash-install-steps-spaced">
             {/* Step 1 */}
             <div className="leash-install-step">
               <div className="leash-install-step-n">1</div>

@@ -663,7 +663,7 @@ header {
 }
 
 .leash-hero-accent {
-  color: #00d492;
+  color: #d97059;
 }
 
 .leash-hero-sub {
@@ -1009,7 +1009,7 @@ header {
 }
 
 .leash-eyebrow-green {
-  color: #00d492;
+  color: #d97059;
 }
 
 .leash-section-title {
@@ -1806,24 +1806,41 @@ header {
 }
 
 
-/* ── Rotating word in hero ── */
+/* ── Rotating word in hero — fixed width so "dashboard" doesn't shift ── */
 .leash-rotating-word {
   display: inline-block;
   color: var(--accent2);
-  min-width: 80px;
+  min-width: 110px;
+  text-align: center;
 }
 
-/* ── Header scroll-reactive opacity ── */
+/* Stable word after the rotating word — no reflow */
+.leash-hero-word-stable {
+  display: inline-block;
+}
+
+/* ── Header scroll-reactive opacity — header stays solid, page fades below ── */
 .leash-header {
-  --header-bg-opacity: 0.82;
-  --header-content-fade: 1;
+  --header-bg-opacity: 0.92;
   background: rgba(253, 249, 246, var(--header-bg-opacity)) !important;
 }
 
-/* Fade out header inner content when scrolling */
-.leash-header-inner {
-  opacity: var(--header-content-fade);
-  transition: opacity 0.1s ease;
+/* Page content fade-under-header effect — fixed gradient overlay below the header */
+.leash-landing::after {
+  content: '';
+  position: fixed;
+  top: 60px; /* approx header height */
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: linear-gradient(to bottom, rgba(253, 249, 246, 0.85) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 40;
+}
+
+/* ── Whitespace above install steps ── */
+.leash-install-steps-spaced {
+  margin-top: 48px;
 }
 
 /* ── Footer redesign — OWS warm style ── */
