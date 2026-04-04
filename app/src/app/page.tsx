@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { CopyButton } from "./components/CopyButton";
 import { useEffect, useRef } from "react";
+// RotatingWord removed — hero uses static "A cool dashboard"
 
 const AGENT_PROMPT = `You are about to install and use LEASH — the local dashboard for Open Wallet Standard (OWS). Follow every step in order.
 
@@ -14,12 +15,13 @@ Run these commands in your terminal:
 Wait until you see "Ready on http://localhost:3847". Then confirm with: curl http://localhost:3847/api/agents
 
 STEP 2 — Register yourself as an agent:
+Open http://localhost:3847 in a browser (or use the API directly):
 POST to http://localhost:3847/api/agents with JSON body:
   { "name": "<your agent name>", "role": "<your role>", "spendLimit": 100, "chains": ["eip155:8453"] }
-Save the "apiKey" field from the response — this is your OWS signing key.
+Save the "id" and "apiKey" fields from the response — you will need both.
 
 STEP 3 — Use your wallet:
-To sign a transaction, POST to http://localhost:3847/api/simulate:
+To simulate or sign a transaction, POST to http://localhost:3847/api/simulate:
   { "agentId": "<your agent id>", "chain": "eip155:8453", "amount": 10, "action": "swap" }
 LEASH will approve or deny based on your spend policy. Raw keys never leave the vault.
 
@@ -97,8 +99,9 @@ export default function LandingPage() {
             Built on Open Standard v1.0.0
           </div>
           <h1 className="leash-hero-title">
-            A <span className="leash-hero-word-black">cool</span> dashboard{" "}
-            <span className="leash-hero-accent">for Open Wallet Standard.</span>
+            A cool dashboard
+            <br />
+            <span className="leash-hero-accent leash-hero-accent-nowrap"> for Open Wallet Standard.</span>
           </h1>
           <p className="leash-hero-sub">
             OWS handles the policy engine, key management, and signing.
@@ -130,7 +133,7 @@ export default function LandingPage() {
             </span>
             <span className="leash-agent-pill-text">
               Your Claw, Claude Code, Codex, or any other agent can manage wallets here.
-              Copy one prompt that tells it to install first, register next, and start transacting.
+              Copy the install prompt and paste it into your agent to get started.
             </span>
             <CopyButton
               text={AGENT_PROMPT}
