@@ -235,7 +235,7 @@ body::after {
 /* ── Steel Shader Text — for LEASH wordmark ── */
 @keyframes steelShimmer {
   0%   { background-position: 0% center; }
-  100% { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }
 .steel-text {
   background: linear-gradient(
@@ -257,6 +257,7 @@ body::after {
     #5a5a68 100%
   );
   background-size: 200% auto;
+  background-repeat: repeat;
   animation: steelShimmer 4s linear infinite;
   -webkit-background-clip: text;
   background-clip: text;
