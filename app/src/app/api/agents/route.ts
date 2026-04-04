@@ -7,15 +7,21 @@ const AGENT_COLORS = ["#c44e2a", "#2d7a4f", "#b8860b", "#1a1a1a", "#5b7fa5", "#8
 const AGENT_AVATARS = ["R", "D", "N", "B", "T", "S"];
 
 export async function GET() {
-  const store = getStore();
-  // Auto-initialize demo agents if empty
-  if (!store.initialized) {
-    await initializeDemoAgents(store);
+  try {
+    const store = getStore();
+    // Auto-initialize demo agents if empty
+    if (!store.initialized) {
+      await initializeDemoAgents(store);
+    }
+    return NextResponse.json({
+      agents: store.agents,
+      activityLog: store.activityLog.slice(0, 50),
+    });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Unknown error";
+    console.error("[agents/GET] Fatal error:", msg);
+    return NextResponse.json({ agents: [], activityLog: [], error: msg }, { status: 200 });
   }
-  return NextResponse.json({
-    agents: store.agents,
-    activityLog: store.activityLog.slice(0, 50),
-  });
 }
 
 export async function POST(req: Request) {

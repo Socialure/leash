@@ -167,10 +167,10 @@ export default function Dashboard() {
           <div className="hidden md:flex items-center px-8 border-r border-card-border flex-1">
             <div>
               <p className="font-mono text-[10px] tracking-[0.2em] uppercase" style={{ color: '#ede9ff' }}>
-                SpendOS for Teams
+                Agent Spend Governance Dashboard
               </p>
               <p className="font-mono text-[9px] text-muted mt-0.5 tracking-[0.1em]">
-                Issue OWS API keys · Set budgets · Restrict chains &amp; vendors
+                Built on Open Wallet Standard · Keys never leave your machine
               </p>
             </div>
           </div>
@@ -409,34 +409,38 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {/* ─── How It Works ─── */}
+      {/* ─── How It Works — OWS Flow ─── */}
       <section className="border-t border-card-border relative z-10">
         <div className="max-w-[1200px] mx-auto">
           <div className="flex items-center justify-between px-8 py-4 border-b border-card-border">
-            <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted">Architecture</span>
+            <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted">OWS Architecture</span>
             <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted">How It Works</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-b border-card-border">
             {[
               {
                 n: "01",
-                title: "Register",
-                desc: "Create an OWS wallet for each agent. Local, standards-compliant, chain-agnostic.",
+                title: "Request",
+                sub: "via MCP · SDK · REST",
+                desc: "Agent calls ows_sign with a chain ID and transaction object. Keys never cross this boundary — agents only hold scoped API tokens.",
               },
               {
                 n: "02",
-                title: "Policy",
-                desc: "Define chain allowlists, vendor allowlists, and daily spend limits. JSON — version-controlled and auditable.",
+                title: "Policy Check",
+                sub: "before any key is touched",
+                desc: "Spending limits, chain allowlists, vendor restrictions, and simulation requirements are evaluated. If the policy denies it, the key is never accessed.",
               },
               {
                 n: "03",
-                title: "Transact",
-                desc: "Agent submits a spend request. Policy engine validates chain + amount before signing.",
+                title: "Sign",
+                sub: "mlock · zeroize · wiped",
+                desc: "Key is decrypted in memory, transaction signed, key immediately wiped (mlock + zeroize). The signed transaction is returned to the caller.",
               },
               {
                 n: "04",
-                title: "Audit",
-                desc: "Every approve and deny is logged with chain, amount, and reason. Real-time trail.",
+                title: "Submit",
+                sub: "optional — on-chain",
+                desc: "If RPC URLs are configured, the signed transaction is broadcast on-chain and the transaction hash is returned. Leash logs the result in real time.",
               },
             ].map((s, i) => (
               <div
@@ -444,15 +448,35 @@ export default function Dashboard() {
                 className={`px-8 py-10 animate-fade-in stagger-${i + 1} hover:bg-card-hover transition-colors ${i < 3 ? "border-r border-card-border" : ""}`}
               >
                 <span className="font-mono text-[9px] arch-num tracking-[0.2em]">{s.n}</span>
-                <h3 className="text-[20px] font-bold mt-4 mb-3 tracking-[-0.02em]">{s.title}</h3>
+                <h3 className="text-[20px] font-bold mt-4 mb-1 tracking-[-0.02em]">{s.title}</h3>
+                <p className="font-mono text-[9px] text-muted/60 mb-3 tracking-[0.05em]">{s.sub}</p>
                 <p className="text-[12px] text-muted leading-relaxed">{s.desc}</p>
               </div>
             ))}
           </div>
 
+          {/* OWS layer diagram — text version */}
+          <div className="px-8 py-5 border-b border-card-border">
+            <div className="flex flex-wrap items-center gap-2 font-mono text-[10px]">
+              <span className="text-muted/50">Agents</span>
+              <span className="text-card-border">→</span>
+              <span className="px-2 py-0.5 border border-card-border rounded text-foreground/70">OWS Interface</span>
+              <span className="text-card-border px-1">·</span>
+              <span className="text-muted/40 text-[9px]">keys never cross ↓</span>
+              <span className="text-card-border px-1">·</span>
+              <span className="px-2 py-0.5 border border-card-border rounded text-foreground/70">Policy Engine</span>
+              <span className="text-card-border">→</span>
+              <span className="px-2 py-0.5 border border-card-border rounded text-foreground/70">Signer</span>
+              <span className="text-card-border">→</span>
+              <span className="px-2 py-0.5 border border-card-border rounded text-foreground/70">~/.ows/wallets/</span>
+              <span className="text-card-border">→</span>
+              <span className="text-success text-[9px]">Signed tx · key wiped</span>
+            </div>
+          </div>
+
           {/* Stack */}
           <div className="px-8 py-4 flex flex-wrap items-center gap-x-5 gap-y-1">
-            {["@open-wallet-standard/core", "MoonPay CLI", "Zerion API", "Next.js", "Base Sepolia"].map(
+            {["@open-wallet-standard/core", "MCP · SDK · CLI · REST", "Policy JSON", "Multi-chain", "Local-first"].map(
               (t, i) => (
                 <span key={t} className="flex items-center gap-5">
                   {i > 0 && <span className="text-card-border">·</span>}
