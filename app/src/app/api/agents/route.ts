@@ -20,7 +20,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const { name, role, spendLimit, policyPreset } = await req.json();
+    const { name, role, spendLimit, policyPreset, vendorAllowlist } = await req.json();
     const store = getStore();
     if (!store.initialized) await initializeDemoAgents(store);
 
@@ -36,13 +36,18 @@ export async function POST(req: Request) {
       ? ["eip155:1", "eip155:8453", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp", "cosmos:cosmoshub-4"]
       : ["eip155:1", "eip155:8453", "eip155:10"];
 
+    const rules: object[] = [{ type: "allowed_chains", chain_ids: chainIds }];
+    if (vendorAllowlist && vendorAllowlist.length > 0) {
+      rules.push({ type: "allowed_vendors", vendors: vendorAllowlist });
+    }
+
     const policy = {
       version: 1,
       id: policyId,
       name: `${name} Policy`,
       created_at: new Date().toISOString(),
       action: "deny",
-      rules: [{ type: "allowed_chains", chain_ids: chainIds }],
+      rules,
     };
     ows.createPolicy(JSON.stringify(policy));
 
@@ -64,6 +69,7 @@ export async function POST(req: Request) {
       txCount: 0,
       status: "active",
       color: AGENT_COLORS[idx % AGENT_COLORS.length],
+      allowedVendors: vendorAllowlist || [],
     };
     store.agents.push(agent);
 
@@ -85,10 +91,10 @@ export async function POST(req: Request) {
 
 async function initializeDemoAgents(store: ReturnType<typeof getStore>) {
   const demoAgents = [
-    { name: "Research Bot", role: "Data Collection & Analysis", spendLimit: 50, emoji: "R", color: "#c44e2a", preset: "conservative", mpWallet: "0xCd33C711947e7a2e352798b5299Ce8FDfF4CF347" },
-    { name: "DeFi Trader", role: "Automated Trading & Yield", spendLimit: 500, emoji: "D", color: "#2d7a4f", preset: "defi-agent", mpWallet: "0xE85e55a4414b5AD2e32B7aB09F5AF8b86d2ad8dc" },
-    { name: "NFT Scout", role: "NFT Discovery & Bidding", spendLimit: 200, emoji: "N", color: "#b8860b", preset: "multi-chain", mpWallet: "0x8d0ef8711f9815De3Fe252a4f77C74beF5f839fd" },
-    { name: "Bridge Agent", role: "Cross-chain Transfers", spendLimit: 1000, emoji: "B", color: "#1a1a1a", preset: "multi-chain", mpWallet: "0x867Ff24933cA6b14aDb8421575770F5111843D76" },
+    { name: "Research Bot", role: "Data Collection & Analysis", spendLimit: 50, emoji: "R", color: "#c44e2a", preset: "conservative", mpWallet: "0xCd33C711947e7a2e352798b5299Ce8FDfF4CF347", vendors: ["Chainlink"] },
+    { name: "DeFi Trader", role: "Automated Trading & Yield", spendLimit: 500, emoji: "D", color: "#2d7a4f", preset: "defi-agent", mpWallet: "0xE85e55a4414b5AD2e32B7aB09F5AF8b86d2ad8dc", vendors: ["Uniswap", "Aave", "Curve", "1inch"] },
+    { name: "NFT Scout", role: "NFT Discovery & Bidding", spendLimit: 200, emoji: "N", color: "#b8860b", preset: "multi-chain", mpWallet: "0x8d0ef8711f9815De3Fe252a4f77C74beF5f839fd", vendors: ["OpenSea", "Blur"] },
+    { name: "Bridge Agent", role: "Cross-chain Transfers", spendLimit: 1000, emoji: "B", color: "#1a1a1a", preset: "multi-chain", mpWallet: "0x867Ff24933cA6b14aDb8421575770F5111843D76", vendors: ["Stargate", "1inch"] },
   ];
 
   for (const da of demoAgents) {
@@ -113,13 +119,17 @@ async function initializeDemoAgents(store: ReturnType<typeof getStore>) {
       try {
         ows.getPolicy(policyId);
       } catch {
+        const chainRules: object[] = [{ type: "allowed_chains", chain_ids: chainMap[da.preset] || chainMap.conservative }];
+        if (da.vendors && da.vendors.length > 0) {
+          chainRules.push({ type: "allowed_vendors", vendors: da.vendors });
+        }
         ows.createPolicy(JSON.stringify({
           version: 1,
           id: policyId,
           name: `${da.name} Policy`,
           created_at: new Date().toISOString(),
           action: "deny",
-          rules: [{ type: "allowed_chains", chain_ids: chainMap[da.preset] || chainMap.conservative }],
+          rules: chainRules,
         }));
       }
 
@@ -140,6 +150,7 @@ async function initializeDemoAgents(store: ReturnType<typeof getStore>) {
         status: "active",
         color: da.color,
         mpWallet: (da as Record<string, unknown>).mpWallet as string | undefined,
+        allowedVendors: da.vendors || [],
       });
     } catch (e) {
       console.error(`Failed to init demo agent ${da.name}:`, e);

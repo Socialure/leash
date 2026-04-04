@@ -62,7 +62,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // Check chain policy via OWS
+    // Check chain policy + vendor allowlist via OWS
     let policyAllowed = true;
     let policyReason = "";
     for (const pid of agent.policyIds) {
@@ -74,6 +74,14 @@ export async function POST(req: Request) {
             if (!rule.chain_ids.includes(chain)) {
               policyAllowed = false;
               policyReason = `Chain ${chain} not in allowlist for policy "${policy.name}"`;
+            }
+          }
+          if (rule.type === "allowed_vendors" && rule.vendors && rule.vendors.length > 0) {
+            const actionLower = (action || "").toLowerCase();
+            const vendorMatch = rule.vendors.some((v: string) => actionLower.includes(v.toLowerCase()));
+            if (!vendorMatch) {
+              policyAllowed = false;
+              policyReason = `Vendor not in allowlist. Permitted: ${rule.vendors.join(", ")}`;
             }
           }
         }

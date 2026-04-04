@@ -16,7 +16,23 @@ interface Agent {
   status: "active" | "paused" | "revoked";
   color: string;
   mpWallet?: string;
+  allowedVendors?: string[];
 }
+
+const VENDOR_LIST = [
+  { id: "uniswap", name: "Uniswap", cat: "DEX" },
+  { id: "aave", name: "Aave", cat: "Lending" },
+  { id: "compound", name: "Compound", cat: "Lending" },
+  { id: "1inch", name: "1inch", cat: "Agg" },
+  { id: "curve", name: "Curve", cat: "DEX" },
+  { id: "balancer", name: "Balancer", cat: "DEX" },
+  { id: "gmx", name: "GMX", cat: "Perps" },
+  { id: "lido", name: "Lido", cat: "Staking" },
+  { id: "opensea", name: "OpenSea", cat: "NFT" },
+  { id: "blur", name: "Blur", cat: "NFT" },
+  { id: "chainlink", name: "Chainlink", cat: "Oracle" },
+  { id: "stargate", name: "Stargate", cat: "Bridge" },
+];
 
 interface ActivityLog {
   id: string;
@@ -149,9 +165,14 @@ export default function Dashboard() {
 
           {/* Center descriptor */}
           <div className="hidden md:flex items-center px-8 border-r border-card-border flex-1">
-            <p className="font-mono text-[10px] tracking-[0.2em] uppercase" style={{ color: '#ede9ff' }}>
-              Agent Spend Governance
-            </p>
+            <div>
+              <p className="font-mono text-[10px] tracking-[0.2em] uppercase" style={{ color: '#ede9ff' }}>
+                SpendOS for Teams
+              </p>
+              <p className="font-mono text-[9px] text-muted mt-0.5 tracking-[0.1em]">
+                Issue OWS API keys · Set budgets · Restrict chains &amp; vendors
+              </p>
+            </div>
           </div>
 
           {/* Right controls */}
@@ -405,7 +426,7 @@ export default function Dashboard() {
               {
                 n: "02",
                 title: "Policy",
-                desc: "Define chain allowlists and daily spend limits. JSON — version-controlled and auditable.",
+                desc: "Define chain allowlists, vendor allowlists, and daily spend limits. JSON — version-controlled and auditable.",
               },
               {
                 n: "03",
@@ -710,6 +731,18 @@ function AgentRow({
                 <span className="text-muted/40 text-[9px]">Base Sepolia</span>
               </div>
             )}
+            {agent.allowedVendors && agent.allowedVendors.length > 0 && (
+              <div className="flex items-start gap-3 pt-1">
+                <span className="text-[9px] uppercase tracking-[0.15em] text-muted/50 w-6 mt-0.5">vnd</span>
+                <div className="flex flex-wrap gap-1">
+                  {agent.allowedVendors.map((v) => (
+                    <span key={v} className="px-1.5 py-0.5 text-[9px] border border-card-border text-foreground/50 uppercase tracking-wider">
+                      {v}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Simulate */}
@@ -832,20 +865,97 @@ function AddAgentModal({
   const [role, setRole] = useState("");
   const [limit, setLimit] = useState(100);
   const [preset, setPreset] = useState("conservative");
+  const [vendors, setVendors] = useState<string[]>([]);
   const [creating, setCreating] = useState(false);
+  const [issuedKey, setIssuedKey] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const toggleVendor = (v: string) => {
+    setVendors((prev) => prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]);
+  };
 
   const submit = async () => {
     if (!name) return;
     setCreating(true);
-    await fetch("/api/agents", {
+    const res = await fetch("/api/agents", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, role, spendLimit: limit, policyPreset: preset }),
+      body: JSON.stringify({ name, role, spendLimit: limit, policyPreset: preset, vendorAllowlist: vendors }),
     });
+    const data = await res.json();
     setCreating(false);
     onCreated();
-    onClose();
+    if (data.apiKeyToken) {
+      setIssuedKey(data.apiKeyToken);
+    } else {
+      onClose();
+    }
   };
+
+  const copyKey = () => {
+    if (issuedKey) {
+      navigator.clipboard.writeText(issuedKey);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  // API key reveal screen
+  if (issuedKey) {
+    return (
+      <div
+        className="fixed inset-0 bg-black/70 backdrop-blur-[1px] flex items-center justify-center z-50 p-4"
+      >
+        <div className="bg-background border border-card-border p-8 w-full max-w-lg animate-fade-in-scale">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-success text-lg">✓</span>
+            <div>
+              <p className="font-mono text-[9px] uppercase tracking-[0.25em] text-success mb-0.5">Key Issued</p>
+              <h3 className="text-xl font-bold tracking-[-0.02em]">{name}</h3>
+            </div>
+          </div>
+
+          <div className="space-y-3 mb-6">
+            <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted">OWS API Key — copy now, shown once</p>
+            <div className="border border-success/30 bg-success/5 px-4 py-3 font-mono text-[11px] break-all text-success/80 leading-relaxed">
+              {issuedKey}
+            </div>
+            <button
+              onClick={copyKey}
+              className={`w-full py-2.5 font-mono text-[10px] uppercase tracking-[0.2em] border transition-colors ${
+                copied
+                  ? "border-success/50 text-success"
+                  : "border-card-border text-muted hover:text-foreground hover:border-foreground/30"
+              }`}
+            >
+              {copied ? "✓ Copied" : "Copy to clipboard"}
+            </button>
+          </div>
+
+          <div className="border border-card-border px-4 py-3 space-y-1.5 mb-6">
+            <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted mb-2">Credentials Issued</p>
+            <div className="font-mono text-[10px] space-y-1 text-foreground/60">
+              <div>OWS wallet created · scoped to this agent</div>
+              <div>Chain policy: <span className="text-foreground/80">{preset}</span></div>
+              {vendors.length > 0 && <div>Vendors: <span className="text-foreground/80">{vendors.join(", ")}</span></div>}
+              <div>Daily limit: <span className="text-foreground/80">${limit}</span></div>
+            </div>
+          </div>
+
+          <div className="font-mono text-[9px] text-muted border-t border-card-border pt-4 mb-6 leading-relaxed">
+            Give this API key to your agent. The agent uses it to request spend authorization — it never sees the private key.
+          </div>
+
+          <button
+            onClick={onClose}
+            className="w-full py-3 bg-foreground text-background text-[10px] font-mono uppercase tracking-[0.2em] hover:bg-foreground/85 transition-colors"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -853,12 +963,12 @@ function AddAgentModal({
       onClick={onClose}
     >
       <div
-        className="bg-background border border-card-border p-8 w-full max-w-lg animate-fade-in-scale"
+        className="bg-background border border-card-border p-8 w-full max-w-lg animate-fade-in-scale max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-8">
           <div>
-            <p className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted mb-1">New</p>
+            <p className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted mb-1">Issue Credentials</p>
             <h3 className="text-xl font-bold tracking-[-0.02em]">Register Agent</h3>
           </div>
           <button
@@ -894,7 +1004,7 @@ function AddAgentModal({
           </div>
           <div>
             <label className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted block mb-2">
-              Daily Spend Limit
+              Daily Budget
             </label>
             <div className="flex border border-card-border">
               {[25, 50, 100, 250, 500, 1000].map((v) => (
@@ -914,7 +1024,7 @@ function AddAgentModal({
           </div>
           <div>
             <label className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted block mb-2">
-              Chain Policy
+              Chain Restriction
             </label>
             <div className="grid grid-cols-2 border border-card-border">
               {[
@@ -940,6 +1050,46 @@ function AddAgentModal({
               ))}
             </div>
           </div>
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted">
+                Vendor Allowlist
+              </label>
+              <span className="font-mono text-[9px] text-muted/50">
+                {vendors.length === 0 ? "unrestricted" : `${vendors.length} selected`}
+              </span>
+            </div>
+            <div className="border border-card-border">
+              <div className="grid grid-cols-3">
+                {VENDOR_LIST.map((v, i) => {
+                  const selected = vendors.includes(v.name);
+                  const isLastRow = i >= VENDOR_LIST.length - (VENDOR_LIST.length % 3 || 3);
+                  return (
+                    <button
+                      key={v.id}
+                      onClick={() => toggleVendor(v.name)}
+                      className={`p-2.5 text-left transition-colors border-r border-b border-card-border ${
+                        (i + 1) % 3 === 0 ? "border-r-0" : ""
+                      } ${isLastRow ? "border-b-0" : ""} ${
+                        selected
+                          ? "bg-foreground/10 text-foreground"
+                          : "text-muted hover:text-foreground hover:bg-card-hover"
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${selected ? "bg-success" : "bg-card-border"}`} />
+                        <span className="text-[11px] font-medium">{v.name}</span>
+                      </div>
+                      <div className="font-mono text-[8px] text-muted/50 mt-0.5 pl-3">{v.cat}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <p className="font-mono text-[9px] text-muted/40 mt-1.5">
+              Leave empty to allow any vendor. Select to restrict.
+            </p>
+          </div>
         </div>
 
         <div className="flex border border-card-border mt-8">
@@ -954,12 +1104,12 @@ function AddAgentModal({
             disabled={!name || creating}
             className="flex-1 px-4 py-3 bg-foreground text-background text-[10px] font-mono uppercase tracking-[0.2em] hover:bg-foreground/85 transition-colors disabled:opacity-30"
           >
-            {creating ? "Creating…" : "Create"}
+            {creating ? "Issuing credentials…" : "Issue API Key →"}
           </button>
         </div>
 
         <p className="font-mono text-[9px] text-muted text-center mt-4 tracking-[0.1em]">
-          Creates OWS wallet · chain policy · scoped API key
+          Creates OWS wallet · chain + vendor policy · scoped API key
         </p>
       </div>
     </div>

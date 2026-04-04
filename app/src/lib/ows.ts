@@ -50,7 +50,24 @@ export interface AgentProfile {
   status: "active" | "paused" | "revoked";
   color: string;
   mpWallet?: string;
+  allowedVendors?: string[]; // vendor allowlist — e.g. ["Uniswap", "Aave"]
 }
+
+// Common DeFi/protocol vendors for allowlisting
+export const VENDOR_PRESETS = [
+  { id: "uniswap", name: "Uniswap", category: "DEX" },
+  { id: "aave", name: "Aave", category: "Lending" },
+  { id: "compound", name: "Compound", category: "Lending" },
+  { id: "1inch", name: "1inch", category: "Aggregator" },
+  { id: "curve", name: "Curve", category: "Stable DEX" },
+  { id: "balancer", name: "Balancer", category: "DEX" },
+  { id: "gmx", name: "GMX", category: "Perps" },
+  { id: "lido", name: "Lido", category: "Staking" },
+  { id: "opensea", name: "OpenSea", category: "NFT" },
+  { id: "blur", name: "Blur", category: "NFT" },
+  { id: "chainlink", name: "Chainlink", category: "Oracle" },
+  { id: "stargate", name: "Stargate", category: "Bridge" },
+] as const;
 
 // Policy template presets
 export const POLICY_PRESETS = [
