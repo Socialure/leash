@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #faf7f2;
-  --foreground: #1a1a1a;
-  --card: #ffffff;
-  --card-border: #e8e4de;
-  --card-hover: #f5f2ec;
-  --muted: #8a8680;
-  --accent: #c44e2a;
-  --accent-dim: #a33d1f;
-  --accent-glow: rgba(196, 78, 42, 0.06);
-  --success: #2d7a4f;
-  --warning: #b8860b;
-  --danger: #c44e2a;
-  --surface: #f2efe9;
-  --border-light: #d9d4cc;
+  --background: #f5f0e8;
+  --foreground: #141210;
+  --card: #fffcf7;
+  --card-border: #e0dbd2;
+  --card-hover: #f8f5ee;
+  --muted: #9c9589;
+  --accent: #c84b31;
+  --accent-dim: #a63d24;
+  --accent-glow: rgba(200, 75, 49, 0.08);
+  --success: #2a7c4f;
+  --warning: #c49200;
+  --danger: #c84b31;
+  --surface: #eee9df;
+  --border-light: #d4cfc5;
 }
 
 @theme inline {
@@ -43,31 +43,41 @@ body {
 }
 
 /* Minimal scrollbar */
-::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d9d4cc; border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: #c4bfb7; }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
 
-/* Animations — subtle */
+/* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes fadeInScale {
-  from { opacity: 0; transform: scale(0.98); }
+  from { opacity: 0; transform: scale(0.97); }
   to { opacity: 1; transform: scale(1); }
 }
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  50% { opacity: 0.25; }
+}
+@keyframes slideDown {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 600px; }
 }
 
-.animate-fade-in { animation: fadeIn 0.2s ease-out; }
-.animate-fade-in-scale { animation: fadeInScale 0.25s ease-out; }
-.animate-pulse-dot { animation: pulse-dot 2.5s ease-in-out infinite; }
+.animate-fade-in { animation: fadeIn 0.25s ease-out; }
+.animate-fade-in-scale { animation: fadeInScale 0.2s ease-out; }
+.animate-pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+.animate-slide-down { animation: slideDown 0.3s ease-out; }
 
 /* Tabular numbers */
 .tabular-nums { font-variant-numeric: tabular-nums; }
 
 /* Selection */
-::selection { background: rgba(196, 78, 42, 0.15); }
+::selection { background: rgba(200, 75, 49, 0.12); }
+
+/* Gradient fade for bottom of activity log */
+.fade-bottom {
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+}
