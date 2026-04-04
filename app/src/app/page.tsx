@@ -12,16 +12,16 @@ Run these commands in your terminal:
   cd leash/app
   npm install
   npm run dev
-Wait until you see "Ready on https://localhost:3847". Then confirm with: curl https://localhost:3847/api/agents
+Wait until you see "Ready on http://localhost:3847". Then confirm with: curl http://localhost:3847/api/agents
 
 STEP 2 — Register yourself as an agent:
-Open https://localhost:3847 in a browser (or use the API directly):
-POST to https://localhost:3847/api/agents with JSON body:
+Open http://localhost:3847 in a browser (or use the API directly):
+POST to http://localhost:3847/api/agents with JSON body:
   { "name": "<your agent name>", "role": "<your role>", "spendLimit": 100, "chains": ["eip155:8453"] }
 Save the "id" and "apiKey" fields from the response — you will need both.
 
 STEP 3 — Use your wallet:
-To simulate or sign a transaction, POST to https://localhost:3847/api/simulate:
+To simulate or sign a transaction, POST to http://localhost:3847/api/simulate:
   { "agentId": "<your agent id>", "chain": "eip155:8453", "amount": 10, "action": "swap" }
 LEASH will approve or deny based on your spend policy. Raw keys never leave the vault.
 
