@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import Link from "next/link";
 
 interface Agent {
   id: string;
@@ -156,8 +157,15 @@ export default function Dashboard() {
         {/* Animated top border line */}
         <div className="header-line" />
         <div className="max-w-[1200px] mx-auto px-8 flex items-stretch justify-between relative z-10">
-          {/* Wordmark */}
-          <div className="flex items-center border-r border-card-border pr-8 py-5">
+          {/* Wordmark + back link */}
+          <div className="flex items-center border-r border-card-border pr-8 py-5 gap-5">
+            <Link
+              href="/"
+              className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted hover:text-foreground transition-colors flex items-center gap-1.5"
+            >
+              ← Home
+            </Link>
+            <div className="w-px h-5 bg-card-border" />
             <div className="flex items-baseline gap-2.5">
               <span className="text-[40px] font-bold tracking-[-0.02em] leading-none steel-text">LEASH</span>
             </div>
@@ -167,10 +175,10 @@ export default function Dashboard() {
           <div className="hidden md:flex items-center px-8 border-r border-card-border flex-1">
             <div>
               <p className="font-mono text-[10px] tracking-[0.2em] uppercase" style={{ color: '#ede9ff' }}>
-                Agent Spend Governance Dashboard
+                Demo Dashboard · Open Wallet Standard 🐕
               </p>
               <p className="font-mono text-[9px] text-muted mt-0.5 tracking-[0.1em]">
-                Built on Open Wallet Standard · Keys never leave your machine
+                localhost:3847 · Keys never leave your machine
               </p>
             </div>
           </div>
@@ -409,81 +417,67 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {/* ─── How It Works — OWS Flow ─── */}
+      {/* ─── OWS Runtime Status ─── */}
       <section className="border-t border-card-border relative z-10">
         <div className="max-w-[1200px] mx-auto">
           <div className="flex items-center justify-between px-8 py-4 border-b border-card-border">
-            <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted">OWS Architecture</span>
-            <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted">How It Works</span>
+            <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted">OWS Runtime</span>
+            <span className="font-mono text-[9px] text-success flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse-dot inline-block" style={{ boxShadow: '0 0 5px var(--success)' }} />
+              running · localhost:3847
+            </span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-b border-card-border">
+          <div className="grid grid-cols-2 lg:grid-cols-4 border-b border-card-border">
             {[
               {
+                label: "Policy Engine",
+                value: "Active",
+                detail: "spend limits · chain allowlists · vendor rules",
+                color: "var(--success)",
                 n: "01",
-                title: "Request",
-                sub: "via MCP · SDK · REST",
-                desc: "Agent calls ows_sign with a chain ID and transaction object. Keys never cross this boundary — agents only hold scoped API tokens.",
               },
               {
+                label: "Key Vault",
+                value: "~/.ows/",
+                detail: "mlock · zeroize · keys never leave disk",
+                color: "var(--accent2)",
                 n: "02",
-                title: "Policy Check",
-                sub: "before any key is touched",
-                desc: "Spending limits, chain allowlists, vendor restrictions, and simulation requirements are evaluated. If the policy denies it, the key is never accessed.",
               },
               {
+                label: "Signing",
+                value: "Local only",
+                detail: "decrypt · sign · wipe — in one atomic op",
+                color: "var(--steel)",
                 n: "03",
-                title: "Sign",
-                sub: "mlock · zeroize · wiped",
-                desc: "Key is decrypted in memory, transaction signed, key immediately wiped (mlock + zeroize). The signed transaction is returned to the caller.",
               },
               {
+                label: "Interfaces",
+                value: "MCP · SDK · REST",
+                detail: "CLI · @open-wallet-standard/core",
+                color: "var(--accent)",
                 n: "04",
-                title: "Submit",
-                sub: "optional — on-chain",
-                desc: "If RPC URLs are configured, the signed transaction is broadcast on-chain and the transaction hash is returned. Leash logs the result in real time.",
               },
-            ].map((s, i) => (
+            ].map((item, i) => (
               <div
-                key={s.n}
-                className={`px-8 py-10 animate-fade-in stagger-${i + 1} hover:bg-card-hover transition-colors ${i < 3 ? "border-r border-card-border" : ""}`}
+                key={item.n}
+                className={`px-8 py-8 animate-fade-in stagger-${i + 1} hover:bg-card-hover transition-colors ${i < 3 ? "border-r border-card-border" : ""}`}
               >
-                <span className="font-mono text-[9px] arch-num tracking-[0.2em]">{s.n}</span>
-                <h3 className="text-[20px] font-bold mt-4 mb-1 tracking-[-0.02em]">{s.title}</h3>
-                <p className="font-mono text-[9px] text-muted/60 mb-3 tracking-[0.05em]">{s.sub}</p>
-                <p className="text-[12px] text-muted leading-relaxed">{s.desc}</p>
+                <span className="font-mono text-[9px] arch-num tracking-[0.2em]">{item.n}</span>
+                <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-muted mt-3 mb-2">{item.label}</p>
+                <p className="text-[18px] font-bold tracking-tight" style={{ color: item.color }}>{item.value}</p>
+                <p className="font-mono text-[10px] text-muted/60 mt-2 leading-relaxed">{item.detail}</p>
               </div>
             ))}
           </div>
 
-          {/* OWS layer diagram — text version */}
-          <div className="px-8 py-5 border-b border-card-border">
-            <div className="flex flex-wrap items-center gap-2 font-mono text-[10px]">
-              <span className="text-muted/50">Agents</span>
-              <span className="text-card-border">→</span>
-              <span className="px-2 py-0.5 border border-card-border rounded text-foreground/70">OWS Interface</span>
-              <span className="text-card-border px-1">·</span>
-              <span className="text-muted/40 text-[9px]">keys never cross ↓</span>
-              <span className="text-card-border px-1">·</span>
-              <span className="px-2 py-0.5 border border-card-border rounded text-foreground/70">Policy Engine</span>
-              <span className="text-card-border">→</span>
-              <span className="px-2 py-0.5 border border-card-border rounded text-foreground/70">Signer</span>
-              <span className="text-card-border">→</span>
-              <span className="px-2 py-0.5 border border-card-border rounded text-foreground/70">~/.ows/wallets/</span>
-              <span className="text-card-border">→</span>
-              <span className="text-success text-[9px]">Signed tx · key wiped</span>
-            </div>
-          </div>
-
-          {/* Stack */}
-          <div className="px-8 py-4 flex flex-wrap items-center gap-x-5 gap-y-1">
-            {["@open-wallet-standard/core", "MCP · SDK · CLI · REST", "Policy JSON", "Multi-chain", "Local-first"].map(
-              (t, i) => (
-                <span key={t} className="flex items-center gap-5">
-                  {i > 0 && <span className="text-card-border">·</span>}
-                  <span className="font-mono text-[10px] text-muted">{t}</span>
-                </span>
-              )
-            )}
+          {/* Chain allowlist status */}
+          <div className="px-8 py-4 flex flex-wrap items-center gap-3">
+            <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted/50 mr-2">Chains</span>
+            {["ETH", "BASE", "OP", "ARB", "POLY", "SOL"].map((chain) => (
+              <span key={chain} className="font-mono text-[10px] px-2 py-0.5 border border-card-border text-foreground/50 uppercase tracking-wider">
+                {chain}
+              </span>
+            ))}
           </div>
         </div>
       </section>
@@ -549,18 +543,20 @@ export default function Dashboard() {
       {/* ─── Footer ─── */}
       <footer className="border-t border-card-border mt-auto relative z-10">
         <div className="max-w-[1200px] mx-auto px-8 py-4 flex items-center justify-between font-mono text-[10px] text-muted">
-          <span className="tracking-[0.1em] uppercase">Leash — Open Wallet Standard</span>
+          <span className="tracking-[0.1em]">LEASH · Dashboard for Open Wallet Standard 🐕</span>
           <div className="flex items-center gap-4">
+            <Link href="/" className="hover:text-foreground transition-colors">
+              ← Home
+            </Link>
+            <span className="text-card-border">·</span>
             <a
-              href="https://github.com/Socialure/leash"
+              href="https://openwallet.sh"
               target="_blank"
               rel="noopener"
               className="hover:text-foreground transition-colors"
             >
-              GitHub ↗
+              openwallet.sh ↗
             </a>
-            <span className="text-card-border">·</span>
-            <span>OWS Hackathon 2026</span>
           </div>
         </div>
       </footer>

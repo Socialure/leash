@@ -542,7 +542,7 @@ header {
 
 .leash-logo-wrap {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
 }
 
@@ -1481,8 +1481,23 @@ header {
 /* ── Footer ── */
 .leash-footer {
   background: #0f0f1a;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: none;
   padding: 60px 0 32px;
+  position: relative;
+}
+
+.leash-footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0, 212, 146, 0.35) 25%,
+    rgba(124, 127, 255, 0.30) 50%,
+    rgba(0, 212, 146, 0.35) 75%,
+    transparent 100%
+  );
 }
 
 .leash-footer-inner {
@@ -1589,7 +1604,7 @@ header {
 
 /* Light logo and nav in header */
 .leash-logo {
-  font-size: 22px;
+  font-size: 33px;
   font-weight: 800;
   letter-spacing: -0.03em;
   color: #0f0f1a !important;

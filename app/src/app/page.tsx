@@ -33,7 +33,7 @@ export default function LandingPage() {
           <div className="leash-logo-wrap">
             <span className="leash-logo">LEASH</span>
             <span className="leash-logo-sep">·</span>
-            <span className="leash-logo-tag">UI for OpenWallet Standard</span>
+            <span className="leash-logo-tag">Dashboard for Open Wallet Standard 🐕</span>
           </div>
 
           {/* Nav */}
@@ -50,7 +50,7 @@ export default function LandingPage() {
               OWS ↗
             </a>
             <Link href="/dashboard" className="leash-btn-sm">
-              Open Dashboard →
+              Demo Dashboard →
             </Link>
           </nav>
         </div>
@@ -234,6 +234,35 @@ export default function LandingPage() {
             Everything runs locally on your machine.
           </p>
 
+          {/* Copy for Agent block — on top, most common use-case */}
+          <div className="leash-agent-install-box">
+            <div className="leash-agent-install-header">
+              <div className="leash-agent-install-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="3" />
+                  <circle cx="9" cy="10" r="1.5" fill="currentColor" />
+                  <circle cx="15" cy="10" r="1.5" fill="currentColor" />
+                  <path d="M9 15 Q12 17.5 15 15" />
+                </svg>
+                Bring your agent into LEASH
+              </div>
+              <CopyButton
+                text={AGENT_PROMPT}
+                label="Copy prompt"
+                successLabel="Copied!"
+                className="leash-copy-for-agent-btn"
+              />
+            </div>
+            <p className="leash-agent-install-desc">
+              Your Claw, Claude Code, Codex, or any other agent can manage wallets here.
+              Copy one prompt that tells it to connect first, read wallet state next,
+              and install only if needed.
+            </p>
+            <div className="leash-agent-prompt-preview">
+              <pre><code>{AGENT_PROMPT}</code></pre>
+            </div>
+          </div>
+
           <div className="leash-install-steps">
             {/* Step 1 */}
             <div className="leash-install-step">
@@ -300,34 +329,6 @@ const { txHash } = await ows.sign({
 })`}</code></pre>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Copy for Agent block */}
-          <div className="leash-agent-install-box">
-            <div className="leash-agent-install-header">
-              <div className="leash-agent-install-title">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <rect x="3" y="3" width="18" height="18" rx="3" />
-                  <circle cx="9" cy="10" r="1.5" fill="currentColor" />
-                  <circle cx="15" cy="10" r="1.5" fill="currentColor" />
-                  <path d="M9 15 Q12 17.5 15 15" />
-                </svg>
-                Copy for Agent
-              </div>
-              <CopyButton
-                text={AGENT_PROMPT}
-                label="Copy prompt"
-                successLabel="Copied!"
-                className="leash-copy-for-agent-btn"
-              />
-            </div>
-            <p className="leash-agent-install-desc">
-              If you&apos;re running an AI agent, copy this structured prompt and paste it in.
-              It tells the agent how to connect to LEASH, read wallet state, and register itself.
-            </p>
-            <div className="leash-agent-prompt-preview">
-              <pre><code>{AGENT_PROMPT}</code></pre>
             </div>
           </div>
         </div>
@@ -406,7 +407,7 @@ const { txHash } = await ows.sign({
           <div className="leash-footer-left">
             <span className="leash-footer-logo">LEASH</span>
             <span className="leash-footer-tagline">
-              UI Dashboard for OpenWallet Standard
+              Dashboard for Open Wallet Standard 🐕
             </span>
             <span className="leash-footer-note">
               Local-first · Open source · Built for the agent era
@@ -426,11 +427,7 @@ const { txHash } = await ows.sign({
           </div>
         </div>
         <div className="leash-footer-bottom">
-          Built on{" "}
-          <a href="https://openwallet.sh" target="_blank" rel="noopener noreferrer">
-            Open Wallet Standard v1.0.0
-          </a>
-          {" "}· Open source · No telemetry · Keys never leave your machine
+          Dashboard for Open Wallet Standard 🐕 · Open source · No telemetry · Keys never leave your machine
         </div>
       </footer>
     </div>
