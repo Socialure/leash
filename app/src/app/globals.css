@@ -500,7 +500,7 @@ header {
 
 /* ── Landing root & ambient ── */
 .leash-landing {
-  background: #ffffff;
+  background: #fdf9f6;
   color: #0f0f1a;
   font-family: var(--font-geist-sans), "Inter", system-ui, -apple-system, sans-serif;
   min-height: 100vh;
@@ -513,8 +513,10 @@ header {
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 0% 0%, rgba(0, 212, 146, 0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 100% 80%, rgba(0, 140, 255, 0.04) 0%, transparent 60%);
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.95), transparent 42%),
+    radial-gradient(circle at top right, rgba(254, 240, 205, 0.45), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(226, 232, 240, 0.30), transparent 30%),
+    radial-gradient(ellipse 70% 50% at 80% 20%, rgba(251, 200, 180, 0.12), transparent 55%);
 }
 
 /* ── Header ── */
@@ -603,7 +605,7 @@ header {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 60px;
-  align-items: start;
+  align-items: center;
 }
 
 @media (max-width: 900px) {
@@ -1566,8 +1568,8 @@ header {
 
 /* Override header to dark */
 .leash-header {
-  background: rgba(10, 10, 18, 0.95) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  background: rgba(253, 249, 246, 0.82) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -1582,64 +1584,45 @@ header {
 }
 
 .leash-header-gradient {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    #6366f1,
-    #3b82f6,
-    #06b6d4,
-    #00d492,
-    #06b6d4,
-    #3b82f6,
-    #6366f1
-  );
-  background-size: 200% auto;
-  animation: headerGradientFlow 4s linear infinite;
-  opacity: 0.9;
+  display: none;
 }
 
-/* Dark logo and nav in header */
+/* Light logo and nav in header */
 .leash-logo {
   font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: #ffffff !important;
-  background: linear-gradient(135deg, #ffffff 0%, #a0c4ff 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #0f0f1a !important;
+  background: none;
+  -webkit-text-fill-color: #0f0f1a;
 }
 
 .leash-logo-sep {
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(0, 0, 0, 0.2);
   font-weight: 300;
 }
 
 .leash-logo-tag {
   font-size: 11px;
   font-family: var(--font-geist-mono), "JetBrains Mono", monospace;
-  color: rgba(255, 255, 255, 0.35) !important;
+  color: rgba(0, 0, 0, 0.4) !important;
   letter-spacing: 0;
 }
 
 .leash-nav-link {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.55) !important;
+  color: #3a3a5a !important;
   text-decoration: none;
   transition: color 0.15s;
 }
 
 .leash-nav-link:hover,
 .leash-nav-external:hover {
-  color: #00d492 !important;
+  color: #00a870 !important;
 }
 
 .leash-btn-sm {
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: #0f0f1a !important;
   color: #ffffff !important;
   font-size: 12px;
   font-family: var(--font-geist-mono), monospace;
@@ -1647,14 +1630,13 @@ header {
   padding: 8px 18px;
   text-decoration: none;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: none;
   transition: all 0.15s;
 }
 
 .leash-btn-sm:hover {
   background: #00d492 !important;
   color: #0f0f1a !important;
-  border-color: #00d492;
 }
 
 /* ── Hero CTA buttons ── */
