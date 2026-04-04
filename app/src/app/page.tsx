@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import LeashShader from "./LeashShader";
 
 interface Agent {
   id: string;
@@ -144,13 +143,13 @@ export default function Dashboard() {
           {/* Wordmark */}
           <div className="flex items-center border-r border-card-border pr-8 py-5">
             <div className="flex items-baseline gap-2.5">
-              <LeashShader />
+              <span className="text-[40px] font-bold tracking-[-0.02em] leading-none steel-text">LEASH</span>
             </div>
           </div>
 
           {/* Center descriptor */}
           <div className="hidden md:flex items-center px-8 border-r border-card-border flex-1">
-            <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted">
+            <p className="font-mono text-[10px] tracking-[0.2em] uppercase" style={{ color: '#ede9ff' }}>
               Agent Spend Governance
             </p>
           </div>
