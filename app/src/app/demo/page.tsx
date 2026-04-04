@@ -184,26 +184,39 @@ export default function DemoPage() {
     steps.push({ step: "MoonPay Routing", status: "info", detail: `Routing via wallet: ${agent.mpWallet} (${agent.address.slice(0, 8)}…)` });
 
     await delay(600);
-    // Call real simulate API
-    const apiRes = await fetch("/api/simulate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        agentId: "demo-" + agent.id,
-        chain: selectedScenario.chain,
-        amount: selectedScenario.amount,
-        action: selectedScenario.action,
-      }),
-    }).catch(() => null);
-
+    // Look up real agent ID from store, then call simulate API
     let txHash = "";
     let signature = "";
-    if (apiRes?.ok) {
-      const data = await apiRes.json();
-      txHash = data.txHash || "";
-      signature = data.signature || "";
-    } else {
-      txHash = `0x${Math.random().toString(16).slice(2).padEnd(64, "0")}`;
+    try {
+      const agentsRes = await fetch("/api/agents").catch(() => null);
+      let realAgentId = "";
+      if (agentsRes?.ok) {
+        const agentsData = await agentsRes.json();
+        const storeAgent = (agentsData.agents || []).find(
+          (a: { name: string; id: string }) => a.name.toLowerCase() === agent.name.toLowerCase()
+        );
+        if (storeAgent) realAgentId = storeAgent.id;
+      }
+      if (realAgentId) {
+        const apiRes = await fetch("/api/simulate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            agentId: realAgentId,
+            chain: selectedScenario.chain,
+            amount: selectedScenario.amount,
+            action: selectedScenario.action,
+          }),
+        }).catch(() => null);
+        if (apiRes?.ok) {
+          const data = await apiRes.json();
+          txHash = data.txHash || "";
+          signature = data.signature || "";
+        }
+      }
+    } catch { /* ignore */ }
+    if (!txHash) {
+      txHash = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`;
       signature = `0x${Math.random().toString(16).slice(2, 24)}…`;
     }
 
@@ -278,7 +291,10 @@ export default function DemoPage() {
           {/* Left: Scenario Picker */}
           <div className="space-y-4">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted mb-3">Pick a Scenario</p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted">Pick a Scenario</p>
+                <span className="font-mono text-[9px] text-muted/60">2 pass · 2 blocked by policy</span>
+              </div>
               <div className="space-y-[1px] bg-card-border">
                 {SCENARIOS.map((s) => (
                   <button

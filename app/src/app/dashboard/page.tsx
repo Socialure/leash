@@ -201,20 +201,6 @@ export default function Dashboard() {
               Register Agent
             </button>
 
-            <a
-              href="https://openwallet.sh"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:flex items-center opacity-80 hover:opacity-100 transition-opacity"
-              aria-label="OpenWallet"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://openwallet.sh/header-logo.svg"
-                alt="OpenWallet"
-                style={{ height: 22, filter: "brightness(0) invert(1)" }}
-              />
-            </a>
           </div>
         </div>
         {/* Bottom shimmer line */}
